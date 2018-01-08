@@ -1,8 +1,0 @@
-! Put user rules line by line in this file.
-! See https://adblockplus.org/en/filter-cheatsheet
-||shadowsocks365.com
-||speedfast.xyz
-||helloworld520.xyz
-||pinterest.com
-||tumblr.com
-||whatismyipaddress.com
