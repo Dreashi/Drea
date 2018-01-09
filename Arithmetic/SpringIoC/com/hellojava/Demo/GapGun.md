@@ -18,6 +18,6 @@ public class GapGun implements Toy {
 	@Override   
 	public void toyInfo() 
 	{  
-		System.out.println("Íæ¾ßÊÖÇ¹£º"+info);
+		System.out.println("çŽ©å…·æ‰‹æžªï¼š"+info);
 		}  
 	} 

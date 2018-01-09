@@ -11,7 +11,7 @@ public class Cyclotomic {
 	len=1.0;
 	s=6;
 	while(i<=n) {
-		System.out.print("µÚ%2d´ÎÇÐ¸î£¬ÎªÕý%5d±ßÐÎ£¬PI=%.24f\n",i,s,k*Math.sqrt(len));
+		System.out.print("ç¬¬%2dæ¬¡åˆ‡å‰²ï¼Œä¸ºæ­£%5dè¾¹å½¢ï¼ŒPI=%.24f/n",i,s,k*Math.sqrt(len));
       s*=2;
       len=2-Math.sqrt(4-len);
       i++;
@@ -20,7 +20,7 @@ public class Cyclotomic {
 }
 public  static void main(String args[]) {
 	int n;
-	System.out.print("ÇÐ¸î´ÎÊý");
+	System.out.print("åˆ‡å‰²æ¬¡æ•°");
 	Scanner input =new Scanner(System.in);
 	n=input.nextInt();
 	cyclotomic(n);
