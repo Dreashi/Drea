@@ -1,0 +1,8 @@
+http://blog.csdn.net/evan_man/article/details/50910542
+http://www.cnblogs.com/1987-05-04/p/6727922.html
+https://worktile.com/tech/share/prototol-buffers
+https://en.wikipedia.org/wiki/Network_socket
+http://wiki.jikexueyuan.com/project/java-socket/tcp.html
+http://droidyue.com/blog/2015/03/08/sockets-programming-in-java/
+http://blog.csdn.net/defonds/article/details/7971259
+https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=5&cad=rja&uact=8&ved=0ahUKEwidq_u7mMvYAhVDl5QKHVbxCg4QFghHMAQ&url=http%3A%2F%2Fenginebai.logdown.com%2Fposts%2F208160%2Fsimple-java-socket-programming&usg=AOvVaw09PsRav3aFn7vbeTJB_gkv
