@@ -1,0 +1,123 @@
+Http协议（超文本传输协议）	应用层面向对象协议
+特点：
+1.支持C/S,B/S模式
+2.简单快速:客户想服务器请求时，只需传送请求方法和路径。（GET、HEAD、POST）
+3.灵活：可传输任意类型的对象，Content-Type标记正在传输的类型
+4.无连接：每次连接只处理一个请求。
+5.无状态：对事务处理没有记忆能力。
+
+Http URL（协议://域名IP:端口号/虚拟目录/文件名?参数#锚）
+http://host[":"port][abs_path]
+http表示当前连接使用http协议 
+host表示要访问的主机的域名或IP地址
+port指定一个端口号，为空则使用80
+abs_path表示文件的存取路径和文件名，为空的话必须加上"/"以表示根路径。（浏览器可以帮我们完成）
+
+URL：协议+主机IP+路径
+URI：命名机制+主机名+路径
+URN（统一资源命名符）:通过名字表示资源
+
+URI是抽象的定义，URL和URN是具体的资源标识方式。URI实例可以代表绝对的，也可以代表相对的，URL只能是绝对的
+
+http请求组成
+请求行+消息报头+空行（必需）+请求正文
+请求行：method+request-uri+http-version+CRLF
+请求方法：GET,POST,HEAD,PUT,DELETE,ERACE,CONNECT,OPTIONS
+GET     请求获取Request-URI所标识的资源
+POST    在Request-URI所标识的资源后附加新的数据，Content-type设置为:application/x-www-form- urlencoded
+HEAD    请求获取由Request-URI所标识的资源的响应消息报头
+PUT     请求服务器存储一个资源，并用Request-URI作为其标识
+DELETE  请求服务器删除Request-URI所标识的资源
+TRACE   请求服务器回送收到的请求信息，主要用于测试或诊断
+CONNECT  HTTP/1.1协议中预留给能够将连接改为管道方式的代理服务器。
+OPTIONS 请求查询服务器的性能，或者查询与资源相关的选项和需求
+
+http响应
+组成：状态行+消息报头+空行（必需）+响应正文
+状态行：http协议的版本+响应状态码+状态码文本描述
+状态码：三位数，第一个数字定义响应级别
+1xx：指示信息--表示请求已接收，继续处理
+2xx：成功--表示请求已被成功接收、理解、接受
+3xx：重定向--要完成请求必须进行更进一步的操作
+4xx：客户端错误--请求有语法错误或请求无法实现
+5xx：服务器端错误--服务器未能实现合法的请求
+
+常见状态码：
+200 OK      //客户端请求成功
+400 Bad Request  //客户端请求有语法错误，不能被服务器所理解
+401 Unauthorized //请求未经授权，这个状态代码必须和WWW-Authenticate报头域一起使用 
+403 Forbidden  //服务器收到请求，但是拒绝提供服务
+404 Not Found  //请求资源不存在，eg：输入了错误的URL
+500 Internal Server Error //服务器发生不可预期的错误
+503 Server Unavailable  //服务器当前不能处理客户端的请求，一段时间后可能恢复正常
+
+消息报头
+类型：普通报头，请求报头，响应报头，实体报头
+报头域：名字+“：”+空格+值
+
+普通报头:在普通报头中，有少数报头域用于所有的请求和响应消息，但并不用于被传输的实体，只用于传输的消息。Cache-Control,Date,Connection
+
+请求报头：请求报头允许客户端向服务器端传递请求的附加信息以及客户端自身的信息。Accept,Accept-Charset,Accept-Encoding,Authorization(证明客户端求全查看某个资源)，Host（主机，端口号），User-Agent（服务器可以得知客户端的属性信息）
+
+响应报头：服务器传递不能放在状态行中的附加响应信息，以及关于服务器的信息和对Request-URI所标识的资源进行下一步访问的信息。Location(重定向地址)，Server（服务器处理请求的软件信息），WWW-Authenticate（包含在401响应消息中，响应Authorization报头域的请求）
+
+实体报头：请求和响应消息都可以传送一个实体。一个实体由实体报头域和实体正文组成，但并不是说实体报头域和实体正文要在一起发送，可以只发送实体报头域。实体报头定义了关于实体正文（eg：有无实体正文）和请求所标识的资源的元信息。Content-Encoding（应用到实体正文的附加内容的编码），Content-Type（实体正文的媒体类型），Content-Length，Last-Modified（资源最后修改日期和事件），Expires(响应过期的日期和时间)
+
+http工作流程：
+1、浏览器向 DNS 服务器请求解析该 URL 中的域名所对应的 IP 地址;
+
+2、解析出 IP 地址后，根据该 IP 地址和默认端口 80，和服务器建立TCP连接;
+
+3、浏览器发出读取文件(URL 中域名后面部分对应的文件)的HTTP 请求，该请求报文作为 TCP 三次握手的第三个报文的数据发送给服务器;
+
+4、服务器对浏览器请求作出响应，并把对应的 html 文本发送给浏览器;
+
+5、释放 TCP连接;
+
+6、浏览器将该 html 文本并显示内容; 　
+
+GET方式和POST方式的区别：
+1，get提交的数据放在URL之后，post把数据放在http请求的请求正文中。
+2.get提交的数据的小有限制，post提交的数据大小没有限制。
+3.get方式使用Request.QueryString获取变量的值，post方式通过Request.From获取变量的值。
+4.get提交的数据不安全，可能引发CSRF（跨站请求伪造）攻击。
+
+cookie和session区别：
+cookie是在客户端保持状态的方案，session是在服务器端保持状态的方案。
+
+cookie：
+cookie主要内容：名字，值，过期时间，路径和域。路径和域构成cookie的作用范围。不设置过期时间，则cookie生命周期为浏览器会话期间，关闭浏览器，cookie消失，称为会话cookie，会话cookie一般存储在内存里。若设置过期时间，则cookie存储在硬盘，可以在不同浏览器进程间共享，cookie有效至超过过期时间。
+
+session：
+服务器使用一种类似于散列表的结构来保存信息。
+程序需要为客户端请求创建session时，服务器检查客户端请求是否包含sessionId，若包含，则根据sessionId检索session，未找到则新建。不包含，则新建session和sessionId,sessionId保存在客户端，一般保存在cookie里，若cookie被禁，则使用URL重写和表单隐藏字段（服务器自动修改表单，添加一个隐藏字段）技术。
+
+cookie和session区别：
+1、cookie存放在浏览器，session存放在服务器。
+2、cookie不是很安全，别人可以分析存放在本地的COOKIE并进行COOKIE欺骗
+   考虑到安全应当使用session。
+
+3、session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能
+   考虑到减轻服务器性能方面，应当使用COOKIE。
+
+4、单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。
+
+5、所以个人建议：
+   将登陆信息等重要信息存放为SESSION
+   其他信息如果需要保留，可以放在COOKIE中
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

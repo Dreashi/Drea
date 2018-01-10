@@ -1,0 +1,31 @@
+TCP/IP四层协议：
+应用层（ISO中的会话层，表示层，应用层）:向用户提供常用的应用程序。DNS,HTTP,POP3,DHCP,SNMP,TELNET（远程登录），FTP（文件传输），SMTP（简单邮件传输）
+传输层（ISO传输层）：提供应用程序间的通信。功能：格式化信息流，提供可靠传输。TCP，UDP
+网际层（ISO网络层）：负责相邻计算机之间的通信。功能：处理来自传输层的分组发送请求，处理输入数据报，处理路径、流控、拥塞等问题。IP，ARP，RARP，ICMP（网际控制报文）
+网络接口层（ISO数据链路层，物理层）：接收IP数据报并通过网络发送，或从网络接收物理帧，抽出数据报交给网络层。点对点协议PPP,CSMA/CD,以太网802.3。
+
+IP协议：面向无连接的，用于计算机之间的通信。
+
+IP地址：IPv4标准，32位二进制，网络号+主机号。
+
+TCP协议：面向连接的，用于应用程序间的通信。
+
+TCP报文中标志域各项含义：
+URG:紧急标志。
+ACK:确认标志。表明确认编号栏有效。
+PSH:推标志。置位时，接收端不处理数据，只转发数据。
+RST:复位标志。复位相应的TCP连接。
+SYN:同步标志。表明同步序列编号栏有效。该标志仅在TCP三次握手时有效。
+FIN:结束标志。发送该标志后不能发送数据，可以接收数据。
+
+TCP三次握手
+建立一个TCP连接，需要客户端和服务器总共发送三个包以确认建立的连接。
+第一次握手：client将SYN=1,seq=J(随机数）发送给server，client进入SYN_SENT状态。
+第二次握手：server根据SYN=1得知client请求建立连接，将ACK=1,ack=J+1,seq=K(随机数)发送给client，server 进入SYN_RCVD状态。
+第三次握手:client检查ACK是否为1，ack是否为J+1,正确则发送ACK=1，ack=K+1,server检查ACK是否为1，ack是否为K+1，正确则建立连接成功过，client和server进入ESTABLISHED状态。
+
+TCP四次挥手：
+第一次挥手：client发送一个FIN给server，client进图FIN_WAIT_1。
+第二次挥手：server收到FIN后，发送一个ACK(收到的FIN+1)给client，sever进入CLOSE_WAIT状态 。
+第三次挥手：server发送一个FIN给client，随后进入LAST_ACK状态。
+第四次挥手：client收到FIN后，client进入TIME_WAIT状态，接着发送一个ACK（收到序号+1）给server，server进入CLOSED状态。

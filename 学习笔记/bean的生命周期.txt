@@ -1,0 +1,100 @@
+一、Bean的创建方式
+
+Bean的创建方式有两种，一种是通过ApplicationContext创建bean，第二种是通过BeanFactory创建，下面对这两种方式做一下对比。
+
+1，通过ApplicationContext创建，方式如下：
+
+ApplicationContext context=new ClassPathXmlApplicationContext("com/java/beanTime/spring.xml");
+Student student1=(Student) context.getBean("student1");
+ 通过这种方式创建bean，必须先创建一个spring容器即context，程序可以通过该容器得到一个bean的实例。需要注意的是，bean实例不是通过第二行代码创建的，而是在创建spring容器的时候就已经创建好并放在了其中了，第二行代码的意思是从spring容器中拿出一个bean实例。使用这种方式的好处是实现了bean的预加载，可以提高程序运行效率，但是消耗了内存。
+2.通过BeanFactory创建 ，方式如下：
+
+BeanFactory factory = new XmlBeanFactory(new ClassPathResource("com/hsp/ioc/beans.xml"));
+Student student1=(Student) factory.getBean("student");
+ 这种方式下，bean是在需要使用时才回被创建。也就是说，bean是在执行第二行代码的时候才被实例化的，第一行代码创建bean工厂时，只会把bean的定义信息加载进来，并没有创建bean，只有在真正需要使用时才会创建bean。大家可以这么理解，工厂是追求效益的，在不确定bean一定会被使用前是不会浪费时间去创建一个不一定会被使用的bean的，只有当程序向工厂请求需要一个bean时，工厂才会去给该程序创建一个bean。使用这种方式可以节约内存，但是增加了程序的运行时间。
+3.BeanFactory和ApplicationContext的比较
+
+BeanFactory和ApplicationContext这两种方法到底有什么不同呢？简单来说BeanFactory是一个比较原始的容器，只有装配bean的基本功能，而ApplicationContext是一个高级容器，它继承自BeanFactory，在BeanFactory的基础上还增加了许多附加功能：
+
+ 
+
+1.提供文本信息解析工具，包括对国际化支持。
+
+2.提供载入文件资源的通用方法，如图片。
+
+3.可以向注册为监听器的bean发送事件。
+
+因此，在没有特殊说明的情况下，一般通过ApplicationContext创建bean实例，通过BeanFactory创建bean实例的方式在很少的情况下使用,如在移动设备,该方式已经被标记为deprecated，即不推荐开发者使用。
+
+二、Bean的作用域
+
+在Spring学习（一）中提到要装配一个bean还需要在xml文件中配置bean，在配置的过程中，我们可以通过 scope属性来规定bean的作用域：
+
+	<bean id="student1" scope="singleton" class="com.java.beanTime.Student">
+		<property name="stuId" value="1"/>
+		<property name="stuName" value="张三"/>
+	</bean>
+scope属性有五个选项：singleton、prototype、request、session、globle session。常用的是singleton和prototype，如果选择singleton，则表示spring容器中的一个bean只能创建一个实例，相当于单例模式。如果选择prototype，则表示spring容器中的一个bean可以创建多个实例。如果没有设置scope属性，则默认scope=“singleton”。各个选项的具体含义如下：
+
+
+三、ApplicationContext对象的创建方式
+
+通常情况下，我们通过ApplicationContext对象来获得bean实例，那么如果创建ApplicationContext对象的方式有哪些？一般可以通过三种方式创建ApplicationContext对象：
+
+1.      ClassPathXmlApplicationContext-> 通过类路径
+
+2.      FileSystemXmlApplicationContext-> 通过文件路径
+
+3.      XmlWebApplicationContext->从web系统中加载，web开发中使用
+
+举个例子：
+
+ApplicationContext context = new FileSystemXmlApplicationContext("c:\foo.xml");
+ApplicationContext context = new ClassPathXmlApplicationContext("foo.xml");
+四、Bean的生命周期
+通过ApplicationContext创建的bean和通过BeanFactory创建的bean的生命周期是不同的。
+
+我们先来看通过ApplicationContext创建的bean的生命周期：
+
+1.根据xml文件的bean标签的id属性和class属性实例化bean，如果scope属性设置为singleton，则把实例化的bean在如内存。
+
+2.根据xml文件中的property标签调用set方法设置bean的属性。
+
+3.如果该bean对应的类实现类BeanNameAware接口，则调用setBeanName()方法。
+
+4.如果该bean对应的类实现了BeanFactoryAware接口，则调用setBeanFactory()方法。
+
+5.如果该bean对应的类实现了ApplicationContextAware接口，则调用setApplicationContext()方法。
+
+6.如果该bean关联了一个后置处理器，即在xml文件中配置了一个实现了BeanPostProcessor接口的类，则自动调用该类中的postProcessBeforeInitialization()方法。
+
+7.如果给bean实现了InitializingBean接口，则调用
+
+8.如果该bean有自己定义的初始化方法（在xml文件中设置bean标签的destroy-init属性），则调用。
+
+9.如果该bean关联了一个后置处理器，则自动调用该类中的postProcessAfterInitialization()方法。
+
+10.到此，bean的初始化过程就完成了，我们就可以使用它了。
+
+11.使用结束，关闭容器。
+
+12.如果该bean实现了DisposableBean接口，则调用destroy()方法。
+
+13.如果改变定义了其他销毁bean的方法（在xml文件中设置bean标签的destroy-method属性），则调用。
+
+到此，通过ApplicationContext创建的一个bean的完整生命周期就结束了。
+
+
+
+通过BeanFactory创建的bean的生命周期比通过ApplicationContext方式创建的bean的生命周期简单一些，具体过程可以通过下图描述：
+
+
+
+五、小结
+
+要掌握两种创建bean的方式，清楚两种方式的不同。掌握两种方式创建的bean的生命周期的区别。
+
+
+
+
+
