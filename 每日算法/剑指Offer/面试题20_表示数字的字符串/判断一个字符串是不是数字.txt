@@ -1,0 +1,76 @@
+/*
+	问题:输入一个字符串，判断其是否是一个数字
+	思路:首先明确一个数字最多有三种字符+(-)  .   e(E)
+		 然后根据这三种字符展开讨论，
+				A  +(-)只能出现在数字开始 或 指数开始初
+				B  . 的前或后都可以没有数字，但不能都没有
+				C  e(E) 的前面必须有数字，后面只能是整数(可正可负)
+*/
+
+#include<stdio.h>
+bool scanUnsignedInteger(const char ** str);
+bool scanInteger(const char ** str);
+
+
+bool isNumeric(const char * str)
+{
+	/*对于下面传指针的地址(&str)做一个解释，如果你懂指针，请跳过这一段注释
+			你去扫描一个字符串,针对该题，当然希望程序处理到什么地方，指针都能指到同一位置,
+			而我们都知道对于传参而言，分为引用传参和值传参（不懂请百度），所以为了使方法返回时，
+			指针仍能停留在最新处理的位置，我们是使用引用传参（也就是传实际地址）
+	*/
+	if(!str)
+		return false;
+
+	bool flag = scanInteger(&str);//开始扫描
+
+	if(*str == '.')
+	{
+		++ str;
+		//下面一句代码为什么使用 '||'
+		//1.小数点前面可以没有数  .23 ->0.23
+		//2.小数点后面可以没有数  12. ->12.0
+		//3.小数点前后都有数 12.23
+
+		flag = scanUnsignedInteger(&str) || flag;//进行无符号数扫描，因为小数点后面不能有符号
+	}
+	if(*str=='e' || *str=='E')
+	{
+		++str;
+		//下面一句代码为什么使用 &&
+		//1.e(E)前面不能没有数字 e5  .e7
+		//2.e(E)后面不能没有数字 12E 2.4e1.2(指数只能是整数,基于计算机表示浮点数的规则而言的)
+
+		flag = scanInteger(&str) && flag;//进行有符号数扫描，因为e(E)后面的指数可以有符号
+	}
+
+	return flag && *str =='\0';//字符串此时应该结束
+}
+
+//无符号数扫描
+bool scanUnsignedInteger(const char ** str)
+{
+	const char * before = *str;//记录当前传入字符串的首地址
+	while(**str !='\0' && **str >= '0' && **str <='9')
+		++(*str);
+	return *str > before;//只有指针发生了移动，才说明是正确的，这里也是我们使用引用传参的原因
+}
+
+//有符号数扫描
+bool scanInteger(const char ** str)
+{
+	if(**str == '+' || **str == '-')//处理符号
+		++(*str);
+	return scanUnsignedInteger(str);//转为无符号数扫描
+}
+int main(void)
+{
+	char * str= "-21.4E-25";
+	char * str1 ="1r3";
+	bool flag = isNumeric(str);//判断是否是数字
+	if(flag)
+		printf("该字符串是一个数字。");
+	else
+		printf("该字符串不是一个数字。");
+	return 0;
+}

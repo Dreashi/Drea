@@ -1,0 +1,77 @@
+/*
+	问题:现有一个链表，将其反转，返回反转链表的头结点
+	思路:对指针的简单使用
+	注意:
+	    1.注意空指针异常
+		2.避免链表断裂时，丢失结点(在反向时，注意保存下一个结点)
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	int data;
+	struct node * next;
+}LNode;
+LNode * createLinkList(int * arr ,int length);//创建链表
+LNode * reverseList(LNode * head);//得到反转链表的头结点
+
+//创建链表(自行选择创建链表的方法，这里是尾插法)
+LNode * createLinkList(int * arr ,int length)
+{
+	LNode * head = NULL;
+	LNode * pNode,*qNode;
+	if(!arr || length <=0)
+		return head;
+	for(int i=0;i<length;++i)
+	{	pNode =(LNode * )malloc(sizeof(LNode));
+		pNode->data=arr[i];
+		pNode->next=NULL;
+		if(!head)
+		{
+			head=qNode=pNode;
+		}
+		else
+		{
+			qNode->next=pNode;
+			qNode=pNode;
+		}
+	}
+
+	return head;
+}
+
+LNode * reverseList(LNode * head)
+{
+	if(!head)
+		return NULL;//头结点为空
+
+	LNode * preNode = head;//存储前一个结点
+	LNode * currNode = head;//存储当前节点
+	LNode * nextNode = head->next;//存储下一个结点
+	while(nextNode)
+	{
+		currNode =nextNode;
+		nextNode = nextNode->next;//保存下一个结点，防止断链时丢失结点
+		currNode->next = preNode;//反向
+		preNode = currNode;
+	}
+	return currNode;
+}
+
+int main(void)
+{
+	int arr[8]={1,2,3,4,5,6,7,8};
+	LNode * root = createLinkList(arr,8);//链表的头结点
+	LNode * reRoot = reverseList(root);//反转链表的头结点
+	if(reRoot)
+	{
+		printf("反转链表的头结点的值为: %d",reRoot->data);
+	}
+	else
+	{
+		printf("原链表为空!");
+	}
+	free(root);//释放链表
+	return 0;
+}

@@ -1,0 +1,76 @@
+/*
+	问题:输出链表中倒数第K个结点
+	思路:
+		利用两个指针遍历链表，第一个指针先行跑动，当移动k-1步时，第二个指针开始跑动，
+		一直到第一个指针跑到尾结点时，第二个指针也就指向了倒数第K个结点
+	注意:当指针在跑动时，是否会发生空指针异常
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	int data;
+	struct node * next;
+}LNode;
+
+//创建链表(自行选择创建链表的方法，这里是尾插法)
+LNode * createLinkList(int * arr ,int length)
+{
+	LNode * head = NULL;
+	LNode * pNode,*qNode;
+	if(!arr || length <=0)
+		return head;
+	for(int i=0;i<length;++i)
+	{	pNode =(LNode * )malloc(sizeof(LNode));
+		pNode->data=arr[i];
+		pNode->next=NULL;
+		if(!head)
+		{
+			head=qNode=pNode;
+		}
+		else
+		{
+			qNode->next=pNode;
+			qNode=pNode;
+		}
+	}
+	return head;
+}
+
+//寻找倒数第K个结点
+LNode * findKthToTail(LNode * head,int k)
+{
+	if(!head || k<=0)
+		return NULL;
+	LNode * firstNode=head;//先移动指针
+	LNode * secondNode;//后移动指针
+	for(int i=1;i<k;++i)
+	{
+		if(firstNode->next)//这里判断很关键，当k大于链表的长度时，不至于让firstNode跑到NULL上
+			firstNode=firstNode->next;
+		else
+			return NULL;
+	}
+	secondNode=head;
+	while(firstNode->next)
+	{
+		firstNode=firstNode->next;
+		secondNode=secondNode->next;
+	}
+
+	return secondNode;
+
+}
+int main(void)
+{
+	int arr[8]={1,2,3,4,5,6,7,8};
+	LNode * root = createLinkList(arr,8);
+//	for(LNode * head=root;head;head=head->next)
+//		printf("%d\t",head->data);
+	LNode * KNode=findKthToTail(root,5);//寻找倒数第五个结点，这里应该是4
+	if(KNode)
+		printf("倒数第五个结点的值为: %d",KNode->data);
+	free(root);//释放链表
+	return 0;
+}

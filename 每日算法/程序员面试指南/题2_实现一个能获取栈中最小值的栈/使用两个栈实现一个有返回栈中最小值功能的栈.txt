@@ -1,0 +1,95 @@
+/*
+	问题：实现一个有获取栈中最小值功能的栈
+	思路：采用两个栈实现，一个存储实际插入顺序，一个维护最小值列表(实际就是最小值在该栈栈顶)
+*/
+
+#include<stdio.h>
+#define N 8
+typedef struct node{
+	int data;
+}STACK;
+
+STACK stackData[100];//存储实际插入顺序的栈
+STACK stackMin[100];//维护最小值列表
+int top=-1;//栈顶
+
+//判断是否为空
+bool isEmpty()
+{
+	if(top==-1)
+		return true;
+	return false;
+}
+
+//获取栈中最小值
+int getMin()
+{
+	if(isEmpty())
+		return 0;
+	else
+		return stackMin[top].data;
+}
+
+//入栈
+void push(int data)
+{	
+	if(isEmpty())
+	{
+		++top;
+		stackData[top].data=stackMin[top].data=data;
+	}
+	else
+	{	
+		
+		if(data<=getMin())//判断入栈值是否最小，是则两个栈正常压入，
+		{
+			++top;
+			stackData[top].data=stackMin[top].data=data;
+		}
+		//否则最小值栈需要调换一下入栈值的位置(下移)
+		else
+		{	
+			++top;
+			stackData[top].data=data;
+			stackMin[top].data=stackMin[top-1].data;
+			stackMin[top-1].data=data;
+		}
+	}
+}
+
+//出栈
+int pop()
+{
+	if(isEmpty())
+	{
+		return 0;
+	}
+	else
+	{
+		if(stackData[top].data>getMin())
+			stackMin[top-1].data=stackMin[top].data;//维持最小值栈的特性(栈顶即为最小)
+	}
+	return stackData[top--].data;//正常出栈
+}
+
+int main(void)
+{
+	int arr[N]={3,2,5,8,4,7,6,9};
+
+	printf("入栈顺序:");
+	for(int i=0;i<N;++i)
+	{
+		printf("\t%d",arr[i]);
+		push(arr[i]);//入栈
+	}
+		
+	printf("\n栈中最小值为\t%d",getMin());
+
+	printf("\n出栈顺序");
+	while(!isEmpty())
+	{
+		printf("\t%d",pop());//出栈
+	}
+	printf("\n");
+	return 0;
+}

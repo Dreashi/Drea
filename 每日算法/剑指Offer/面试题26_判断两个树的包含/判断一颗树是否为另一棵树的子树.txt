@@ -1,0 +1,126 @@
+/*
+	问题:现有二叉树A和B，判断B是不是A的子树
+	思路:二叉树的问题首先想到二分和递归，因为这两者完全契合。
+		本题的解决思路是先跑A树，寻找与B树根结点值相同的结点，然后同步跑两个树，
+	     直到某一棵树结束,或者两者的值出现不一致时
+	
+	注意:
+		1.二叉树的问题极易出现空指针，要特别小心当前访问的结点是不是为空，否则很容易造成程序崩溃
+		2.注意double值的比较，不能使用 == ,无法精确比较，只能通过比较它们之差的绝对值是否在一个很小的范围来判断两者是否相等 
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	double data;
+	struct node * left;
+	struct node * right;
+}BTNode;
+BTNode * createBTree(double * arr,int length);//创建二叉搜索树
+bool hasSubTree(BTNode * bRoot,BTNode * dRoot);//判断是否是子树
+bool equalTwoTree(BTNode * bRoot,BTNode * dRoot);//比较两棵树
+bool equalDoubleValue(double d1,double d2);//判断两个double值是否相等
+
+BTNode * createBTree(double * arr,int length)
+{
+	if(!arr && length<=0)
+		return NULL;
+	BTNode * root,*p_Node,*pre_Node,*next_Node;
+	//创建根结点
+	root =(BTNode *)malloc(sizeof(BTNode));
+	root->data=arr[0];
+	root->left = root->right = NULL;
+	
+	for(int i=1;i<length;++i)
+	{
+		//后置结点
+		next_Node=root;
+		p_Node=(BTNode *)malloc(sizeof(BTNode));
+		p_Node->data=arr[i];
+		p_Node->left=p_Node->right=NULL;
+
+		while(next_Node)
+		{
+			//前置结点
+			pre_Node=next_Node;
+			if(pre_Node->data < p_Node->data )
+				next_Node=next_Node->right;
+			else
+				next_Node=next_Node->left;
+		}
+
+		//挂结点
+		if(pre_Node->data < p_Node->data)
+			pre_Node->right=p_Node;
+		else
+			pre_Node->left=p_Node;
+			
+	}
+
+	return root;
+}
+
+bool hasSubTree(BTNode * bRoot,BTNode * dRoot)
+{
+	bool flag = false;
+	if(bRoot && dRoot)
+	{
+		if(equalDoubleValue(bRoot->data,dRoot->data))//寻找值相等的结点，并作为在父树比较的始结点
+			flag = equalTwoTree(bRoot,dRoot);
+		if(!flag)//标识为真，不用继续
+			flag= hasSubTree(bRoot->left,dRoot);
+		if(!flag)//标识为真，不用继续
+			flag=hasSubTree(bRoot->right,dRoot);
+	}
+
+	return flag;
+}
+
+bool equalTwoTree(BTNode * bRoot,BTNode * dRoot)
+{
+	if(!dRoot)//子树遍历完,说明前面的都相等，返回true
+		return true;
+	if(!bRoot)//父树遍历完,但子树还未遍历完，说明不构成父子树关系，返回false
+		return false;
+
+	if(!equalDoubleValue(bRoot->data,dRoot->data))//值不相等，直接返回
+		return false;
+
+	return equalTwoTree(bRoot->left,dRoot->left) && equalTwoTree(bRoot->right,dRoot->right);
+
+}
+
+bool equalDoubleValue(double d1,double d2)
+{
+	bool flag=false;
+	if((d1-d2)>-0.00000001 && (d1-d2)<0.0000001)
+		flag=true;
+	return flag;
+}
+int main(void)
+{
+	//这里创建的是二叉搜索数
+	double baseArray[7]={5,4,2,9,3,6,1};//父树
+
+	double deriverArray1[3]={2,1,3};//子树
+	double deriverArray2[3]={2,1,4};//非子树
+
+	BTNode * bRoot = createBTree(baseArray,7);//创建一颗二叉搜索树
+	BTNode * dRoot1= createBTree(deriverArray1,3);
+	BTNode * dRoot2= createBTree(deriverArray2,3);
+	
+	bool flag1=hasSubTree(bRoot,dRoot1);//判断包含关系
+	bool flag2=hasSubTree(bRoot,dRoot2);
+
+	if(flag1)	
+		printf("树1是父树的子树\n");
+	else
+		printf("树1不是父树的子树\n");
+
+	if(flag2)	
+		printf("树2是父树的子树\n");
+	else
+		printf("树2不是父树的子树\n");
+	return 0;
+}

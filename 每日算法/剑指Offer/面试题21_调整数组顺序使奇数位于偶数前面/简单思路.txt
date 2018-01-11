@@ -1,0 +1,36 @@
+/*
+	问题:给定一个乱序数组，让奇数排在偶数的前面
+	思路:应用快排的思路就可以很好地解决
+	扩展:快排的思维就是分类讨论，随后处理，这一类问题的关键就是分类的标准不同，将这一标准抽象出来，就可以解决这一类问题
+*/
+
+#include<stdio.h>
+
+void ReorderOddEven(int * arr,int length)
+{
+	if(!arr || length<=0)
+		return ;
+	int low = 0;
+	int high = length -1;
+	while(low<high)
+	{
+		while(arr[low]%2 && low<high)//让low跑到最左边的第一个偶数
+			++low;
+		while(arr[high]%2==0 && low<high)//让high跑到最右边的第一个奇数
+			--high;
+		if(low<high)//交换 low 和 high 的值
+		{
+			int temp=arr[low];
+			arr[low]=arr[high];
+			arr[high]=temp;
+		}
+	}
+}
+int main(void)
+{
+	int arr[8] = {3,2,5,8,4,7,6,9};
+	ReorderOddEven(arr,8);
+	for(int i=0;i<8;++i)
+		printf("%d\t",arr[i]);
+	return 0;
+}
