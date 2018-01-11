@@ -1,7 +1,7 @@
 package com.java.num5;
 
 import java.util.Stack;
-
+//一个栈元素类型为整数，现在将该栈从顶到底按从大到小的顺序排列，只许额外申请一个栈
 public class StackTest {
 	public static void sortStackByStack(Stack<Integer> stack) {
 		Stack<Integer> help=new Stack<Integer>();

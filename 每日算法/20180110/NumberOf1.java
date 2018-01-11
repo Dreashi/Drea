@@ -1,5 +1,7 @@
 package com.java.number;
 
+
+//计算整数的二进制中1的个数
 public class NumberOf1 {
 	/**
 	 * 规律：n-1是将n最右边的1变为0，其右边的所有0变为1，n&(n-1)会消掉n最右边的1，不断循环可以得出n中1的个数
