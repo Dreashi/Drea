@@ -1,0 +1,104 @@
+/*
+	问题:得到一颗二叉树的镜像
+	思路:
+		镜像就是照镜子,本来应该在左边的结点现在出现在右边...,而得到一个二叉树的镜像，无非就是让树的左右结点互换，
+		采用递归解决就很方便。
+	
+	注意:
+		1.理清交换的规律，以及交换时暂存结点的问题，就能很好的避免空指针和乱序。
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	int data;
+	struct node * left;
+	struct node * right;
+}BTNode;
+BTNode * createBTree(int * arr,int length);//创建二叉搜索树
+void mirrorRecursively(BTNode * root);//得到一颗二叉树的镜像
+void forderPrint(BTNode * root);//前序遍历
+
+BTNode * createBTree(int * arr,int length)
+{
+	if(!arr && length<=0)
+		return NULL;
+	BTNode * root,*p_Node,*pre_Node,*next_Node;
+	//创建根结点
+	root =(BTNode *)malloc(sizeof(BTNode));
+	root->data=arr[0];
+	root->left = root->right = NULL;
+	
+	for(int i=1;i<length;++i)
+	{
+		//后置结点
+		next_Node=root;
+		p_Node=(BTNode *)malloc(sizeof(BTNode));
+		p_Node->data=arr[i];
+		p_Node->left=p_Node->right=NULL;
+
+		while(next_Node)
+		{
+			//前置结点
+			pre_Node=next_Node;
+			if(pre_Node->data < p_Node->data )
+				next_Node=next_Node->right;
+			else
+				next_Node=next_Node->left;
+		}
+
+		//挂结点
+		if(pre_Node->data < p_Node->data)
+			pre_Node->right=p_Node;
+		else
+			pre_Node->left=p_Node;
+			
+	}
+
+	return root;
+}
+
+void mirrorRecursively(BTNode * root)
+{
+	if(!root)//当前结点为空
+		return;
+	if(!root->left && !root->right)//当前结点的左右为空
+		return;
+
+	BTNode * temp = root->left;//交换左右结点
+	root->left = root->right;
+	root->right=temp;
+
+	if(root->left)//左不为空
+		mirrorRecursively(root->left);
+	if(root->right)//右不为空
+		mirrorRecursively(root->right);
+	
+}
+
+void forderPrint(BTNode * root)
+{
+	if(root)
+	{
+		printf("%d\t",root->data);
+		forderPrint(root->left);
+		forderPrint(root->right);
+	}
+}
+int main(void)
+{
+	//这里创建的是二叉搜索数
+	int baseArray[7]={5,4,2,9,3,6,1};//父树
+
+	BTNode * bRoot = createBTree(baseArray,7);//创建一颗二叉搜索树
+	
+//	forderPrint(bRoot);
+//	printf("\n");
+
+	mirrorRecursively(bRoot);//得到一棵树的镜像
+
+	forderPrint(bRoot);//前序遍历
+
+	return 0;
+}
