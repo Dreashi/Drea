@@ -1,0 +1,81 @@
+/*
+	问题:现有两个序列，一个为入栈顺序，判断另一个序列是不是其出栈序列
+	思考:栈是先进后出的数据结构,所以只要判断当前数据是否在栈顶，若在直接出栈;若不在,则根据入栈顺序继续将数压入栈，每次入栈都得判断栈顶元素是否等于当前出栈元素
+		若直到输入序列压栈完毕，还没找到该数，则说明这不是一个出栈序列。
+	注意:根据的栈的结构特点去思考这些问题，还有就是注意空指针。
+
+	这里为了解决该问题，采用链栈，也就是只有前驱的链表。
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct node{
+	int data;
+}Stack;
+int top=-1;
+Stack * s;
+
+//我这里简单的做了下出栈入栈的操作,还有很多异常输入和上限没判断，望周知
+bool isEmpty()
+{
+	return top>-1?true:false;
+}
+
+void push(int number)
+{
+	s[++top].data=number;
+}
+
+void pull()
+{
+	if(isEmpty())
+		 top--;
+
+}
+
+
+bool isPopOrder(int * pushStack,int * pullStack,int length)
+{
+	int indexIn=0;//该变量已入过栈的数量
+	int indexOut=0;//该变量指向出栈序列的第一个元素的下标
+
+	while(indexOut<length)
+	{	
+		if(indexIn<length)
+			push(pushStack[indexIn++]);
+		if(s[top].data == pullStack[indexOut])//当栈顶元素等于出栈序列的第一个元素时，就出栈
+		{
+			pull();
+			indexOut++;
+		}
+		else if(indexIn==length)//当栈顶不相等，并且入栈序列已结束，即可退出判断
+			break;
+	}
+
+	return top==-1?true:false;//当栈空了，说明该序列成立，否则不然
+}
+
+int main(void)
+{
+	int length;
+	printf("输入序列长度:");
+	scanf("%d,",&length);
+	
+	s=(Stack *)malloc(sizeof(Stack)*length);//分配栈空间
+	
+	int * pushStack = (int *)malloc(sizeof(int)*length);
+	int * pullStack = (int *)malloc(sizeof(int)*length);
+	printf("\n输入入栈序列:");
+	for(int i=0;i<length;++i)
+		scanf("%d",&pushStack[i]);
+	printf("\n输入出栈序列:");
+	for(int j=0;j<length;++j)
+		scanf("%d",&pullStack[j]);
+	
+	bool b=isPopOrder(pushStack,pullStack,length);
+	if(b)
+		printf("Yes!\n");
+	else
+		printf("No!\n");
+	return 0;
+}
