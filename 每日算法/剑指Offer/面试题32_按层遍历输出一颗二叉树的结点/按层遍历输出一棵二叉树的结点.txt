@@ -1,0 +1,88 @@
+/*
+	问题:从上到下打印一颗二叉树，也就是按层遍历
+	思路:与往常的前，中，后序不同，不能用二分的思路去解决问题,但是仔细思考也能发现规律，每次输出都是从左往右，并且有严格的分层关系
+			所以这里采用一个数组去存储遍历的顺序，然后逐一打印，其实最佳的应该是用队列去存储，这里不方便实现，就退而求其次了。
+	注意:注意空指针和边界问题
+
+*/
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	int data;
+	struct node * left;
+	struct node * right;
+}BTNode;
+BTNode * createBTree(int * arr,int length);//创建二叉搜索树
+void printFromTopToBotton(BTNode * root,int length);//从上到下打印二叉树
+
+BTNode * createBTree(int * arr,int length)
+{
+	if(!arr && length<=0)
+		return NULL;
+	BTNode * root,*p_Node,*pre_Node,*next_Node;
+	//创建根结点
+	root =(BTNode *)malloc(sizeof(BTNode));
+	root->data=arr[0];
+	root->left = root->right = NULL;
+	
+	for(int i=1;i<length;++i)
+	{
+		//后置结点
+		next_Node=root;
+		p_Node=(BTNode *)malloc(sizeof(BTNode));
+		p_Node->data=arr[i];
+		p_Node->left=p_Node->right=NULL;
+
+		while(next_Node)
+		{
+			//前置结点
+			pre_Node=next_Node;
+			if(pre_Node->data < p_Node->data )
+				next_Node=next_Node->right;
+			else
+				next_Node=next_Node->left;
+		}
+
+		//挂结点
+		if(pre_Node->data < p_Node->data)
+			pre_Node->right=p_Node;
+		else
+			pre_Node->left=p_Node;
+			
+	}
+
+	return root;
+}
+
+
+void printFromTopToButton(BTNode * root,int length)
+{
+	BTNode * *result =(BTNode * *)malloc(sizeof(BTNode *) * length);
+
+	if(!root || length<=0)//异常输入
+		return;
+	int index=0;//标识当前遍历的位置
+	result[index]=root;//首先将root存入数组
+	for(int i=1;index<length;)//i标识当前数组应该存放的位置,当index跑完，说明整个树遍历完了
+	{
+		if(result[index]->left)
+			result[i++]=result[index]->left;
+		if(result[index]->right)
+			result[i++]=result[index]->right;
+		index++;
+	}
+
+	for(int j=0;j<length;++j)
+		printf("%d\t",result[j]->data);
+
+	
+}
+
+int main(void)
+{
+	int arr[8]={3,2,5,8,4,7,6,9};
+	BTNode * root=createBTree(arr,8);//创建一颗二叉树
+	printFromTopToButton(root,8);
+	return 0;
+}
