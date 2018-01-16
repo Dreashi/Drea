@@ -1,0 +1,124 @@
+/*
+	问题:给定一个整数，输出二叉树中，从根结点出发的路径结点值之和与整数相等的路径
+	思路:由于是输出路径，肯定需要一个容器，由于是逐个加入，并且后加入的如果不满足条件，必须先从容器中离开，这就满足栈的特性。
+	
+*/
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct node{
+	int data;
+	struct node * left;
+	struct node * right;
+}BTNode;//二叉树结点
+
+typedef struct Node{
+	int data;
+}Stack;//栈，这里只存储了结点的值，如果你想要存储二叉树的结点，改下就好
+int top=-1;
+Stack * s;
+int Max;//栈的上限
+
+int count=0;//记录路径数
+
+//入栈
+void push(int value)
+{
+	if(top<Max-1)
+		s[++top].data=value;
+}
+//出栈,这里不需要出战的值，所以不需要返回值
+void pull()
+{
+	if(top>-1)
+		s[top--].data=0;
+		
+}
+
+BTNode * createBTree(int * arr,int length);//创建二叉树
+void findPath(BTNode * root,int key,int sum);//寻找路径
+void printPath();//输出栈中的路径
+
+BTNode * createBTree(int * arr,int length)
+{
+	if(!arr || length<=0)
+		return NULL;
+	BTNode * root,* preNode,* tatilNode,* nextNode;
+	root=(BTNode *)malloc(sizeof(BTNode));
+	root->data=arr[0];
+	root->left=root->right=NULL;
+	
+	for(int i=1;i<length;++i)
+	{
+		tatilNode=root;
+		nextNode=(BTNode *)malloc(sizeof(BTNode));
+		nextNode->data=arr[i];
+		nextNode->left=nextNode->right=NULL;
+		while(tatilNode)
+		{
+			preNode=tatilNode;
+			if(tatilNode->data > nextNode->data)
+				tatilNode=tatilNode->left;
+			else
+				tatilNode=tatilNode->right;
+		}
+		if(preNode->data>nextNode->data)
+			preNode->left=nextNode;
+		else
+			preNode->right=nextNode;
+	}
+	return root;
+}
+
+void findPath(BTNode * root,int key,int sum)
+{
+	
+	if(key==(sum+root->data))
+	{
+		push(root->data);//入栈
+		printPath();
+		return ;
+	}
+	if(!root)
+		return ;
+
+	push(root->data);//入栈
+	
+	//判断左
+	if(root->left)
+	{
+		findPath(root->left,key,sum+root->data);
+		pull();//递归回来出栈
+	}
+	
+	//判断右
+	if(root->right)
+	{
+		findPath(root->right,key,sum+root->data);
+		pull();//递归回来出栈
+
+	}
+}
+
+void printPath()
+{
+	printf("\n路径%d:\t",++count);
+	for(int i=0;i<=top;++i)
+		printf("%d\t",s[i].data);
+	
+}
+
+
+int main(void)
+{
+	int arr[8]={6,4,9,3,5,1,2,10};
+	int key;
+	BTNode * root =createBTree(arr,8);//创建一颗二叉搜索树
+
+	s = (Stack *)malloc(sizeof(Stack)*8);//创建栈
+	Max=8;//给定栈上限
+
+	printf("请输入: ");
+	scanf("%d",&key);
+	findPath(root,key,0);//寻找路径
+	return 0;
+}
