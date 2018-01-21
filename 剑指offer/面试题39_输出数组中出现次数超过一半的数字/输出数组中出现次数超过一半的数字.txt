@@ -1,0 +1,67 @@
+/*
+	问题:数组中出现次数超过一半的数字
+	思路:首先用一个值result存储第一个数字并初始化次数times为1;当次数为0时，更换数字;当当前遍历的字符等于result,times++,否则times--
+	注意:当你的输入不合法时，应该能够判断出来
+*/
+#include<stdio.h>
+int moreThanHalfNum(int * arr,int len);//输出次数超过一半的数字
+bool checkPutInBefore(int *arr,int len);//循环前检查
+bool checkPutInAfter(int *arr,int len,int num);//循环后检查
+bool flag=false;//默认输入为false
+
+
+//检查传入参数是否非法
+bool checkPutInBefore(int *arr,int len)
+{
+	if(!arr || len<=0)
+		flag=true;
+	return flag;
+}
+
+//检查当前数出现是否超过一半
+bool checkPutInAfter(int *arr ,int len,int num)
+{
+	int times=0;
+	for(int i=0;i<len;++i)
+		if(arr[i] == num)
+			times++;
+	if(times*2 <= len)
+		flag=true;
+	return flag;
+}
+
+//当flag为true且返回值为0，说明输入肯定有误
+//当flag为false，那就说明这就是次数大于一半的数字
+int moreThanHalfNum(int * arr,int len)
+{
+	if(checkPutInBefore(arr,len))
+		return 0;
+	int result = arr[0];
+	int times=1;
+	for(int i=1;i<len;++i)
+	{
+		if(times == 0)
+		{
+			result=arr[i];
+			times=1;
+		}
+		else if(arr[i] == result)
+			times++;
+		else
+			times--;
+	}
+
+	if(checkPutInAfter(arr,len,result))
+		return 0;
+	return result;
+}
+int main(void)
+{
+	int arr[10]={1,1,2,8,3,1,1,1,1,9};
+	int result = moreThanHalfNum(arr,10);
+	if(flag)
+		printf("输入有误!");
+	else
+		printf("该数组次数大于一半的数为:%d",result);
+	return 0;
+}         
