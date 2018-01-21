@@ -1,0 +1,73 @@
+/*
+	应用算法:回溯
+	解题思路:设用一个标识数组(与行走地图一样)，当机器人从某点开始行进，每进入一个方格时，都需判断该方格是否可以进入，若可以，便改变标识；
+			 不可以，则进行当前方格的下一方向的行进。当所有方向都行进完毕，则回溯到上一方格，进行下一方格的行进。
+	注意：回溯一般都是建立在数组上的，所以对于数组的特性应该很清楚，首先应该明白，在实际存储中，所有数据都是线性存放
+			（可以理解成一维存储）
+			
+*/
+#include<stdio.h>
+int getDigitSum(int num)
+{
+	int sum=0;
+	while(num>0)
+	{
+		sum+=num%10;
+		num/=10;
+	}
+	return sum;
+}
+
+int check(int k,int rows,int cols,int row,int col,bool *visited)
+{
+	bool flag = false;
+	if(row>=0 && row<rows && col>=0 && col<cols
+		&& getDigitSum(row)+getDigitSum(col) <=k
+		&& !visited[row*cols+col])
+		flag=true;
+	return flag;
+}
+
+int movingCountCore(int k,int rows,int cols,int row,int col,bool * visited)
+{
+	
+	int count=0;
+	if(check(k,rows,cols,row,col,visited))
+	{
+		visited[row*cols+col]=true;
+		count = 1 + movingCountCore(k,rows,cols,row-1,col,visited)
+			      + movingCountCore(k,rows,cols,row,col-1,visited)
+				  + movingCountCore(k,rows,cols,row+1,col,visited)
+				  + movingCountCore(k,rows,cols,row,col+1,visited);
+	}
+	return count;
+}
+
+int movingCount(int k,int rows,int cols)
+{
+	if(k<0 || rows<=0 || cols<=0)
+		return 0;
+	bool * visited = new bool[rows*cols];
+	for(int i=0;i<rows*cols;++i)
+		visited[i]=false;
+	int count = movingCountCore(k,rows,cols,0,0,visited);
+	delete[] visited;
+	return count;
+}
+
+
+int main(void)
+{
+	int k,rows,cols,count;
+	printf("请输入k的值:");
+	scanf("%d",&k);
+	printf("\n请输入行值rows:");
+	scanf("%d",&rows);
+	printf("\n请输入列值cols:");
+	scanf("%d",&cols);
+	count=movingCount(k,rows,cols);
+	
+	
+	printf("\n\n机器人能行走%d个方格\n",count);
+	return 0;
+}

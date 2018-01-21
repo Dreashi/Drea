@@ -1,0 +1,80 @@
+/*
+	问题:合并两个已排序的链表
+	思路:利用递归的思想，不断比较两个链表的值就可以解决，当一条链表结束时，就可以直接挂链退出
+	注意:
+	    1.注意空指针异常
+		2.避免链表重新连接时，丢失结点
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	int data;
+	struct node * next;
+}LNode;
+LNode * createLinkList(int * arr ,int length);//创建链表
+LNode * Merge(LNode * head1,LNode * head2);//合并链表
+
+
+//创建链表(自行选择创建链表的方法，这里是尾插法)
+LNode * createLinkList(int * arr ,int length)
+{
+	LNode * head = NULL;
+	LNode * pNode,*qNode;
+	if(!arr || length <=0)
+		return head;
+	for(int i=0;i<length;++i)
+	{	pNode =(LNode * )malloc(sizeof(LNode));
+		pNode->data=arr[i];
+		pNode->next=NULL;
+		if(!head)//头结点为空
+		{
+			head=qNode=pNode;
+		}
+		else
+		{
+			qNode->next=pNode;
+			qNode=pNode;
+		}
+	}
+
+	return head;
+}
+
+LNode * Merge(LNode * head1,LNode * head2)
+{
+	if(!head1)//第一条链表结束
+		return head2;
+	if(!head2)//第二条链表结束
+		return head1;
+
+	LNode * head = NULL;
+	if(head1->data < head2->data)
+	{
+		head=head1;
+		head->next=Merge(head1->next,head2);//递归回来后挂链
+	}
+	else
+	{
+		head=head2;
+		head->next=Merge(head1,head2->next);//递归回来后挂链
+	}
+	return head;
+}
+
+int main(void)
+{
+	int arr1[6]={2,4,8,9,21,23};
+	int arr2[4]={3,5,8,100};
+	LNode * head1 = createLinkList(arr1,6);//分别创建两个链表
+	LNode * head2 = createLinkList(arr2,4);
+
+	LNode * head = Merge(head1,head2);//合并后的链表
+
+	for(LNode * p_Node=head;p_Node;p_Node=p_Node->next)
+		printf("%d\t",p_Node->data);
+
+	free(head);//释放链表
+	return 0;
+}

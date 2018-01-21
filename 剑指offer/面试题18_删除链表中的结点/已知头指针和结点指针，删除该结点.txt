@@ -1,0 +1,36 @@
+/*
+	非完整代码
+	问题：在O(1)的时间内，删除一个结点，已知头指针和该结点指针
+	思路: 将待删除的next结点替换掉待删除结点，可以保证O(1)
+*/
+
+void deleteANode(Node ** head,Node * beDelete)
+{
+	//检查为输入异常
+	if(!head || !beDelete)
+		return ;
+	//待删除的结点不是尾结点
+	if(beDelete->next！=NULL)
+	{
+		beDelete->data=beDelete->next->data;
+		beDelete->next=beDelete->next->next;
+		free(beDelete->next);
+	}
+	//待删除结点是头结点
+	else if(*head == beDelte)
+	{
+		* head = NULL;
+		free(beDelete);
+	}
+	//待删除结点是尾结点
+	else
+	{
+		Node * p_Node = * head;
+		while(p_Node ->next!=beDelete)
+		{
+			p_Node=p_Node->next;
+		}
+		p_Node->next=NULL;
+		free(beDelete);
+	}
+}

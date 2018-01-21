@@ -1,0 +1,75 @@
+/*
+	问题描述：给你一个前序和中序遍历序列，重建一棵二叉树，并不采用递归的方式，将后序遍历序列输出
+	算法描述；根据前序确定根节点，根据中序确定左右子树，层层递推，从而得到一棵二叉树
+				后序遍历，若不采用递归，就得借助其他数据结构，这里采用栈
+
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+#define N 8
+typedef struct Node1{
+	int data;
+	struct Node1 * Lchild;
+	struct Node1 * Rchild;
+}BTree;//二叉树
+
+
+BTree * construct(int * prestart,int *preend,int * inostart,int * inoend)
+{
+	BTree * root=(BTree *)malloc(sizeof(BTree));
+	root->data=prestart[0];//前序遍历第一个一定是根节点，并且可以适用于每一层
+	root->Lchild=root->Rchild=NULL;
+	if(prestart==preend)
+	{
+		if(inostart==inoend && *inostart==*prestart)
+		{
+			return root;//叶子节点
+		}
+	}
+	int *inorder_left_end=inostart;//中序列表中根节点的值
+	while(*inorder_left_end!=root->data && inorder_left_end<=inoend)
+		inorder_left_end++;
+
+	int inolength=inorder_left_end-inostart;//左子树的长度
+	if(inolength>0)//构建左子树
+	{
+		root->Lchild=construct(prestart+1,prestart+inolength,inostart,inostart+inolength-1);
+	}
+	if(inolength<inoend-inostart)//构建右子树
+	{
+		root->Rchild=construct(prestart+inolength+1,preend,inostart+inolength+1,inoend);
+	}
+	return root;
+}
+
+
+
+BTree * constructCore(int * pre,int * inorder,int length)
+{
+	BTree * root = NULL;
+	if(length>0 && pre!=NULL && inorder!=NULL )
+		root=construct(pre,pre+length-1,inorder,inorder+length-1);
+	return root;
+}
+
+
+void print(BTree * root)//测试输出(前序)
+{
+	if(root)
+	{
+		printf("%d\t",root->data);
+		print(root->Lchild);
+		print(root->Rchild);
+	}
+}
+
+int main(void)
+{
+	int preorder[N]={1,2,4,7,3,5,6,8};
+	int inorder[N]={4,7,2,1,5,3,8,6};
+	BTree * root=NULL;
+	root=constructCore(preorder,inorder,N);//重构二叉树
+	print();//输出二叉树
+	return 0;
+}

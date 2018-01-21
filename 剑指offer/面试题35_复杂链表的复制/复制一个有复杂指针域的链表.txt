@@ -1,0 +1,132 @@
+/*
+	问题:复杂链表的复制（链表结点的组成是，一个数据域，两个指针域，一个为next指针，另一个为指向链表任意结点的sibing指针）
+	思路:
+		方法1:先挂next,复制出一个完整结点的链表，然后再遍历链表，挂sibing，时间复杂度O(n^2)
+		方法2:先挂next,并在复制的时候将sibing指针存储在一张hash表中，当挂sibing指针时，就不需要一遍遍的跑链表，时间复杂度O(n),不过需要一个长度为N的hash表
+		方法3:与前面两种的做法不同的是，我们不单独创建一个链表，而是将原链表的每个结点复制一份挂在源结点的后面，当挂sibing指针时，只需要按照源结点的
+		sibing的next挂sibing,最后将链表拆分即可。
+*/
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct node{
+	int data;
+	struct node * next;
+	struct node * sibing;
+}ComplexListNode;
+
+ComplexListNode * createComplexList(int * arr,int len);//创建复杂链表
+void cloneNodes(ComplexListNode * pHead);//复制结点
+void connectSibingNodes(ComplexListNode * pHead);//挂sibing指针
+ComplexListNode * ReconnectNode(ComplexListNode * pHead);//拆分链表
+void printComplexList(ComplexListNode * pHead);//输出复杂链表
+
+ComplexListNode * createComplexList(int * arr,int len)
+{
+	if(!arr || len<=0)
+		return NULL;
+	ComplexListNode * head = (ComplexListNode *)malloc(sizeof(ComplexListNode));//头结点
+	ComplexListNode * pNode,*qNode;
+	head->data=arr[0];
+	head->next=head->sibing=NULL;
+	qNode=head;
+	for(int i=1;i<len;++i)
+	{
+		pNode = (ComplexListNode *)malloc(sizeof(ComplexListNode));
+		pNode->data=arr[i];
+		pNode->next=pNode->sibing=NULL;
+		
+		qNode->next=pNode;
+		qNode=qNode->next;
+
+	}
+	ComplexListNode * temp = head;
+	while(temp->next->next)//这里随意挂了下sibing指针
+	{
+		temp->sibing=temp->next->next;
+		temp=temp->next;
+	}
+	return head;
+}
+
+void printComplexList(ComplexListNode * pHead)
+{
+	if(!pHead)
+		return ;
+	ComplexListNode * pNode = pHead;
+	while(pNode)
+	{
+		if(pNode->sibing)
+			printf("data=%d\tsibing->data=%d\n",pNode->data,pNode->sibing->data);
+		else
+			printf("data=%d\tsibing->data=NULL\n",pNode->data);
+		pNode=pNode->next;
+	}
+}
+void cloneNodes(ComplexListNode * pHead)
+{
+	ComplexListNode * pNode = pHead;
+	while(pNode)//复制结点，并挂在源结点的后面
+	{
+		
+		ComplexListNode * qNode = (ComplexListNode *)malloc(sizeof(ComplexListNode));
+		qNode->data=pNode->data;
+		qNode->next=pNode->next;
+		qNode->sibing=NULL;
+		pNode->next=qNode;
+		pNode=qNode->next;
+//		printComplexList(pHead);
+	}
+
+}
+
+void connectSibingNodes(ComplexListNode * pHead)
+{
+	ComplexListNode * pNode= pHead;
+	while(pNode)//挂sibing指针
+	{
+		ComplexListNode * qNode = pNode->next;
+		if(pNode->sibing)//原结点的sibing不为空
+			qNode->sibing=pNode->sibing->next;
+		pNode=qNode->next;
+	}
+}
+
+ComplexListNode * ReconnectNode(ComplexListNode * pHead)
+{
+	ComplexListNode * afterHead = NULL;//复制链表的的头结点
+	ComplexListNode * pNode=NULL;//指向复制链表的结点
+	ComplexListNode * qNode=pHead;//指向原链表的结点
+	if(qNode)//设置复制链表头结点的位置
+	{
+		afterHead=pNode=qNode->next;
+		qNode=qNode->next=pNode->next;
+		pNode=pNode->next;
+	}
+	while(qNode)//拆分链表
+	{
+		pNode->next=qNode->next;
+		pNode=pNode->next;
+		qNode->next=pNode->next;
+		qNode=qNode->next;
+		
+	}
+	return afterHead;
+}
+
+int main(void)
+{
+	int arr[8]={3,2,5,8,4,7,6,9};
+	ComplexListNode * head = createComplexList(arr,8);
+	
+	printf("原链表:\n");
+	printComplexList(head);//输出原链表
+
+	cloneNodes(head);//复制结点并挂链
+	connectSibingNodes(head);//挂sibing指针
+	ComplexListNode * cloneHead = ReconnectNode(head);//拆分链表
+
+	printf("复制后的链表:\n");
+	printComplexList(cloneHead);//输出复制后的链表
+
+	return 0;
+}

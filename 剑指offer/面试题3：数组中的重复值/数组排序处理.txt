@@ -1,0 +1,43 @@
+//
+//问题说明:找出数组中重复的数字
+//   在一个长度为n的数组里的所有数字都在0～n-1的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。
+//   例如：如果输入长度为7的数组{2,3,1,0,2,5,3},那么对应的输出是重复的数字2，3。
+//
+//Create by coffee on 2017/6/3 22:48
+//
+#include<stdio.h>
+//利用冒泡排序将数组重新排列，再找出重复值
+void FindRepeatedNum_1(int a[],int n)
+{
+	int temp,flag=1;
+	if(a==NULL||n<=1)//空数组处理
+		return;
+	while(flag)//判断是否排序完成
+	{
+		flag=0;
+	    for(int j=0;j<n;j++)
+		{
+			if(a[j]>a[j+1])
+			{
+				temp=a[j];
+				a[j]=a[j+1];
+				a[j+1]=temp;
+				flag=1;
+			}
+		}
+	}
+	int checknum=-2147483647;//检验重复值
+	for(int i=0;i<n;i++)
+	{
+		if(a[i]==a[i+1]&&checknum!=a[i])  
+			printf("%3d",a[i+1]);
+		checknum=a[i];
+	}
+}
+int main(void)
+{
+	int array[10]={5,3,5,9,0,4,9,1 ,4,7};
+	printf("重复值为:");
+	FindRepeatedNum_1(array,10);
+	return 0;
+}

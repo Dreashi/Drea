@@ -1,0 +1,122 @@
+/*
+	问题:之字形打印二叉树
+	思路:仍用一个数组存储，只不过在遍历的时候，需要注意遍历的顺序，以及先左还是先右
+	注意：边界问题
+
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	int  data;
+	struct node * left;
+	struct node * right;
+}BTNode;
+BTNode * createBTree(int * arr,int length);//创建二叉搜索树
+void print(BTNode * root,int length);//之字形打印二叉树
+
+BTNode * createBTree(int * arr,int length)
+{
+	if(!arr && length<=0)
+		return NULL;
+	BTNode * root,*p_Node,*pre_Node,*next_Node;
+	//创建根结点
+	root =(BTNode *)malloc(sizeof(BTNode));
+	root->data=arr[0];
+	root->left = root->right = NULL;
+	
+	for(int i=1;i<length;++i)
+	{
+		//后置结点
+		next_Node=root;
+		p_Node=(BTNode *)malloc(sizeof(BTNode));
+		p_Node->data=arr[i];
+		p_Node->left=p_Node->right=NULL;
+
+		while(next_Node)
+		{
+			//前置结点
+			pre_Node=next_Node;
+			if(pre_Node->data < p_Node->data )
+				next_Node=next_Node->right;
+			else
+				next_Node=next_Node->left;
+		}
+
+		//挂结点
+		if(pre_Node->data < p_Node->data)
+			pre_Node->right=p_Node;
+		else
+			pre_Node->left=p_Node;
+			
+	}
+
+	return root;
+}
+
+void print(BTNode * root,int length)
+{
+	if(!root)
+		return;
+	BTNode ** arr=(BTNode **)malloc(sizeof(BTNode *)*length);//创建结点数组
+	int index=0;//标识当前存储的位置
+	int before;//记录每层遍历的起点
+	int floor=1;//标识当前所在层数
+	int temp=1;//记录每层的结点
+	arr[index]=root;//将root存储进去
+
+	while(index<length-1)
+	{
+		before = index - temp ;//循环边界
+		temp=0;//初始化每层的结点数
+		if(floor % 2)
+		{
+			for(int i=index;i>before;--i)
+			{
+				if(arr[i]->right)
+				{
+					arr[++index]=arr[i]->right;
+					temp++;
+				}
+				if(arr[i]->left)
+				{
+					arr[++index]=arr[i]->left;
+					temp++;
+				}
+			}
+		}
+		else
+		{
+			for(int j=index;j>before;--j)
+			{
+				if(arr[j]->left)
+				{
+					arr[++index]=arr[j]->left;
+					temp++;
+				}
+				if(arr[j]->right)
+				{
+					arr[++index]=arr[j]->right;
+					temp++;
+				}
+			}
+		}
+		floor++;//层数加一
+
+		
+	}
+
+	for(int k=0;k<length;++k)
+		printf("%d\t",arr[k]->data);
+
+}
+int main(void)
+{
+	int arr[8]={3,2,5,8,4,7,6,9};
+	BTNode * root =createBTree(arr,8);//创建二叉搜索树
+
+	print(root,8);//之字形打印二叉树
+
+	return 0;
+}

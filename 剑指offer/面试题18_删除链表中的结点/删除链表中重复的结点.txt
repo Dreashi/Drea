@@ -1,0 +1,33 @@
+/*
+	问题：删除链表中重复的结点(全部删除，而不是保证不重复)
+	思路：用两个指针跑链表，这里设为p_Node pre_Node 一个判断结点是否重复，一个记录前驱，
+*/
+
+void deleteDuplilcation(Node ** head)
+{
+	if(!head || !*head)
+		return ;
+		
+	Node * p_Node =  * head ;
+	Node * pre_Node = NULL;
+	while(p_Node)
+	{
+		if(p_Node-data != p_Node->next->data)
+		{
+			pre_Node = p_Node;
+			p_Node = p_Node->next; 
+		}
+		else
+		{
+			Node ** temp = &p_Node;
+			while(p_Node ->data == p_Node->next->data)
+			{
+				p_Node=p_Node->next;
+			}
+			p_Node = p_Node->next;
+			pre->Node->next=p_Node;
+			free(temp);
+		}
+	}
+
+}

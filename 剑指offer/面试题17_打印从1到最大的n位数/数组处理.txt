@@ -1,0 +1,82 @@
+/*
+	问题：打印从一到最大的n位数
+	陷阱：大数问题
+	解决方法：采用字符串或者数组去存储数据
+				1.输入异常的处理（负数）
+				2.自增的处理（进位，溢出）
+				3.输出的处理（不打印前面无意义的零）
+*/
+
+//数组不用进行字符处理，但需要传数组长度
+#include<stdio.h>
+
+#include<stdlib.h>
+
+//2.自增的处理（进位，溢出）
+bool Increment(short * number,int length)
+{
+	bool isOverflow = false;//标识当前数是否溢出
+	int nTakeOver=0;//进位标识
+	for(int i=length-1;i>=0;--i)
+	{
+		int nSum=number[i]+nTakeOver;//计算当前下标应该表示的数字
+		if(i==length-1)
+			nSum++;//首次自增
+		if(nSum>=10)
+		{
+			if(i==0)
+				isOverflow=true;//溢出
+			else
+			{
+				nSum-=10;
+				nTakeOver=1;
+				number[i]=nSum;
+			}
+		}
+		else
+		{
+			number[i]=nSum;
+			break;
+		}
+
+	}
+
+	return isOverflow;
+}
+
+//3.输出的处理（不打印前面无意义的零）
+void PrintNumber(short * number,int length)
+{
+	bool isBeginning0 = true;//标识左边的零
+	for(int i=0;i<length;++i)
+	{
+		if(isBeginning0 && number[i]!=0)
+			isBeginning0=false;
+		if(!isBeginning0)
+			printf("%d",number[i]);
+	}
+	printf("\t");
+}
+void Print1ToMaxOfDigit(int n)
+{
+	if(n<=0)
+		return;
+	short * number = (short *)malloc(sizeof(short)*n);
+	for(int i=0;i<n;++i)
+		number[i]=0;
+	while(!Increment(number,n))//自增
+	{
+		PrintNumber(number,n);//输出
+	}
+	free(number);//释放数组
+}
+int main(void)
+{
+
+	int n;
+	printf("输入位数n= ");
+	scanf("%d",&n);
+	printf("\n从1到最大的%d位数:\n",n);
+	Print1ToMaxOfDigit(n);
+	return 0;
+}

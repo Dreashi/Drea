@@ -1,0 +1,23 @@
+#include<stdio.h>
+int Fibonacci(int n)
+{
+	int result[2]={0,1};
+	if(n<2)
+	{
+		return result[n];
+	}
+	int F1=0;
+	int F2=1;
+	int Fn=0;
+	for(int i=1;i<n;i++)
+	{
+		Fn=F1+F2;
+		F1=F2;
+		F2=Fn;
+	}
+	return Fn;
+}
+int main(void)
+{
+	printf("%d",Fibonacci(6));
+}

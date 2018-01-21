@@ -1,0 +1,115 @@
+/*
+	问题:将二叉搜索树转换为双向链表
+	思路:抓住二叉搜索树的特点，左比右小。且每个结点都有两个指针指向它的左右子结点，与双向链表的结构相似，所以以中序遍历为基准
+		将结点的左指针和右指针分别当做前继指针和后继指针，分别连接即可。
+*/
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	int data;
+	struct node * left;
+	struct node * right;
+}BTNode;
+
+BTNode *createBTree(int * arr,int len);//创建二叉搜索树
+BTNode *treeToList(BTNode * root);//将二叉树转变为双向链表
+void treeToList(BTNode * root,BTNode ** lastNode);//挂链
+void printList(BTNode * head);//输出链表
+void printTree(BTNode * root);//输出二叉树
+
+BTNode * createBTree(int * arr,int len)
+{
+	if(!arr || len<=0)
+		return NULL;
+	BTNode * root,*pNode,*qNode,* preNode;
+	root=(BTNode *)malloc(sizeof(BTNode));
+	root->data=arr[0];
+	root->left=root->right=NULL;
+	for(int i=1;i<len;++i)
+	{
+		qNode=root;
+		pNode =(BTNode *)malloc(sizeof(BTNode));
+		pNode->data=arr[i];
+		pNode->left=pNode->right=NULL;
+		while(qNode)
+		{
+			preNode=qNode;
+			if(qNode->data>pNode->data)
+				qNode=qNode->left;
+			else
+				qNode=qNode->right;
+		}
+		if(preNode->data>pNode->data)
+			preNode->left=pNode;
+		else
+			preNode->right=pNode;
+	}
+
+	return root;
+}
+
+BTNode * treeToList(BTNode * root)
+{
+	BTNode * lastNode=NULL;
+	treeToList(root,&lastNode);//先创建双向链表，检错在挂链时检查
+	BTNode * headNode=lastNode;
+	while(headNode!=NULL && headNode->left!=NULL)
+		headNode=headNode->left;
+
+	return headNode;
+}
+
+void treeToList(BTNode * pNode,BTNode ** lastNode)
+{
+
+	if(!pNode)//当前结点为空
+		return;
+	BTNode * currNode = pNode;
+	
+	if(currNode->left)//左不为空
+	{
+		treeToList(currNode->left,lastNode);
+	}
+	currNode->left=*lastNode;//将当前结点的左指针挂向最终结点
+	
+	if(*lastNode)//首次进入判断lastNode是否为空
+		(*lastNode)->right=currNode;
+	*lastNode= currNode;
+	
+	if(currNode->right)//右不为空
+	{
+		treeToList(currNode->right,lastNode);
+		
+	}
+}
+void printList(BTNode * head)
+{
+	BTNode * pNode =head;
+	while(pNode)
+	{
+		printf("%d\t",pNode->data);
+		pNode=pNode->right;
+	}
+}
+
+void printTree(BTNode * root)
+{
+	if(root)
+	{
+		printTree(root->left);
+		printf("%d\t",root->data);
+		printTree(root->right);
+	}
+}
+int main(void)
+{
+	int arr[8]={3,2,5,8,4,7,6,9};
+	BTNode * root=createBTree(arr,8);//创建二叉树
+
+//	printTree(root);//输出二叉树，测试
+	BTNode * head=treeToList(root);//转化
+
+	printList(head);//输出链表
+	return 0;
+}

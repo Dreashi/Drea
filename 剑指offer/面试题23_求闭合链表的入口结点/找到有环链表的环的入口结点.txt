@@ -1,0 +1,117 @@
+/*
+	问题:现有一个链表，判断其是否有闭环，若有，得到环的入口结点
+	思路:
+		同样是沿用两指针跑链表的思路，一快一慢求出环的节点数，一先一后找出入口结点
+	具体做法:
+		    先让两个指针指向头结点，快指针每次移动两个节点，慢指针每次移动一个节点；若两者能相遇，说明链表有环
+		反之可得无环。当两者相遇时，慢指针移动的步数即是环的节点数。
+			当得到环的节点数后，又用两个指针指向头结点，一先一后，一个指针先走n步，另一个指针再出发，两者相遇时的结点即是入口结点。
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	int data;
+	struct node * next;
+}LNode;
+LNode * createLinkList(int * arr ,int length);//创建链表
+int numberOfLoopNode(LNode * head);//求得环的节点数
+LNode * findEntryLoopNode(LNode * head, int number);//得到环的入口结点
+
+//创建链表(自行选择创建链表的方法，这里是尾插法)
+LNode * createLinkList(int * arr ,int length)
+{
+	LNode * head = NULL;
+	LNode * pNode,*qNode;
+	if(!arr || length <=0)
+		return head;
+	for(int i=0;i<length;++i)
+	{	pNode =(LNode * )malloc(sizeof(LNode));
+		pNode->data=arr[i];
+		pNode->next=NULL;
+		if(!head)
+		{
+			head=qNode=pNode;
+		}
+		else
+		{
+			qNode->next=pNode;
+			qNode=pNode;
+		}
+	}
+	//创建一个环
+	qNode=head;
+	for(int j=0;j<3;++j)
+	{
+		pNode->next=qNode;
+		qNode=qNode->next;
+	}
+	return head;
+}
+
+int numberOfLoopNode(LNode * head)
+{
+	LNode * pSimple=head;//每次移动一个节点的指针
+	LNode * pDouble=head;//每次移动两个节点的指针
+	int count = 0;//记录慢指针移动的步数
+	if(!head)
+		return 0;
+	do{
+		if(pDouble->next && pDouble->next->next)//检查快指针，当链表中没有环时，避免空指针
+		{
+			pDouble=pDouble->next->next;
+			pSimple=pSimple->next;
+			count++;
+		}
+		else
+		{
+			return 0;//发现为空，说明没环
+		}
+	}while(pDouble != pSimple);
+
+	return count;
+} 
+
+LNode * findEntryLoopNode(LNode * head,int number)
+{
+	LNode * pFast = head;//先走的指针
+	LNode * pSlow = head;//后走的指针
+	for(int i=0;i<number;++i)
+		pFast = pFast->next;
+	while(pFast != pSlow)
+	{
+		pFast = pFast->next;
+		pSlow = pSlow->next;
+	}
+
+	return pSlow;
+}
+int main(void)
+{
+	int arr[8]={1,2,3,4,5,6,7,8};
+	LNode * root = createLinkList(arr,8);
+	/*
+	//测试环是否创建成功
+	LNode * tNode=root;
+	for(int i=0;i<50;++i)
+	{	
+		printf("%d\t",tNode->data);
+		tNode=tNode->next;
+	}
+	*/
+
+	int number = numberOfLoopNode(root);//求环的节点数
+	if(number>0)
+	{
+		LNode * EntryNode=findEntryLoopNode(root,number);//找到入口结点
+		printf("入口结点的值为: %d",EntryNode->data);
+	
+	}
+	else
+	{
+		printf("该链表无环!");
+	}
+	free(root);//释放链表
+	return 0;
+}

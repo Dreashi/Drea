@@ -1,0 +1,58 @@
+/*
+	问题:实现正则表达式（'.'和'*'的匹配功能）
+	说明:'.'表示可以匹配任意一个字符  ， '*'表示可以匹配任意个数的'*'前面字符 例:B*  意味着0～n个B
+	思路:就是考虑的情况比较需要注意
+		大体上就两种情况:
+			1.正则式第二个字符不是'*'
+				
+			2.正则式第二个字符是'*'
+				a.第一个字符是'*'
+					跳过
+				b.第一个字符是'.'
+					->还要判断结束与否
+				c.第一个字符是确切字符
+					->仍要判断结束与否
+
+*/
+
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+
+bool matchCore(char * str,char * pattern)
+{
+	if(*str == '\0' && *pattern == '\0')//两者都结束
+		return true;
+	if(*str!='\0' && *pattern == '\0')//字符串还未结束,正则式已结束
+		return false;
+	if(*(pattern+1)=='*')//当前字符的下一字符是'*'
+	{
+		
+		if(*str == *pattern || (*pattern == '.' && *str == *(str+1)))//str字符与pattern中的字符相等 或者 pattern有'.'出现
+			return matchCore(str+1,pattern);
+		else if(*pattern == '.' && *str != *(str+1))//patten当前是'.'但已匹配结束
+			return matchCore(str+1,pattern+2);
+		else //包含当前字符是'*' 或者 str字符与pattern中的字符不相等(也就是这个 * 匹配了零个字符)
+			return matchCore(str,pattern+2);
+	}
+	if(*str == * pattern ||(*pattern == '.' && *str != '\0') )
+		return matchCore(str+1,pattern+1);
+	return false;
+}
+bool match(char * str,char * pattern)
+{
+	if(!str || !pattern)
+		return false;
+	return matchCore(str,pattern);
+}
+int main(void)
+{
+	char * str     = "das";//测试字符串
+	char * pattern = ".c*as";//正则式
+	bool flag = match(str,pattern);
+	if(flag)
+		printf("匹配成功!");
+	else
+		printf("匹配失败!");
+	return 0;
+}

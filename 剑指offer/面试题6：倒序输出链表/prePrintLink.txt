@@ -1,0 +1,112 @@
+/*
+	问题描述：从头到尾打印链表
+	解决方法：递归，栈
+	两者的区别：栈比递归的优势在于，当链表的长度非常大时，递归的栈深度就会很大，最后导致栈溢出，而使用栈辅助输出则不会；然而递归的实现简单，各有优劣
+	思考问题：这里之所以采用栈数组，是认为当前问题不适合链栈，否则就相当于倒着建链表了，没有体现出栈的优势。
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+#define N 10
+
+typedef struct node{
+	int data;
+	struct node * next;
+}ElemSN;
+
+
+/*以下是关于栈和其出栈入栈的定义*/
+typedef struct Node{
+	ElemSN * value;
+}Stack;
+int top=-1;//初始化栈顶指针
+Stack s[1000]={NULL};//初始化栈数组
+
+void push(ElemSN * st_Node)
+{
+	if(top<1000)
+	{
+		s[++top].value=st_Node;
+	}
+	else
+	{
+		printf("栈满!");
+	}
+	
+}
+
+void pop()
+{
+	if(top==-1)
+	{
+		printf("栈空!");
+		return;
+	}
+	s[top--].value=NULL;
+}
+ElemSN * createLink(ElemSN * h,int b[])
+{
+	ElemSN * p_Node=NULL;
+	ElemSN * q_Node= h;
+	for(int i=0;i<N;i++)
+	{	
+		p_Node=(ElemSN *)malloc(sizeof(ElemSN));
+		p_Node->data=b[i];
+		p_Node->next=NULL;
+		if(q_Node==NULL)
+		{
+			h=q_Node=p_Node;
+		}
+		else
+		{
+			q_Node->next=p_Node;
+			q_Node=p_Node;
+		}
+
+	}
+	return h;
+}
+
+void ordPrintLink(ElemSN * h)
+{
+	ElemSN * p_Node= h;
+	while(p_Node!=NULL)
+	{
+		printf("%d\t",p_Node->data);
+		p_Node=p_Node->next;
+	}
+}
+void prePrintLink1(ElemSN * h)
+{
+	ElemSN * p_Node=h;
+	if(p_Node==NULL)
+		return;
+	prePrintLink1(p_Node->next);
+	printf("%d\t",p_Node->data);
+}
+
+void prePrintLink2(ElemSN * h)
+{
+	ElemSN * p_Node=h;
+	while(p_Node!=NULL)
+	{
+		push(p_Node);//入栈
+		p_Node=p_Node->next;
+	}
+
+	while(top>-1)
+	{
+		printf("%d\t",s[top].value->data);
+		pop();
+	}
+}
+int main(void)
+{
+	ElemSN * head=NULL;//头指针
+	int a[N]={3,2,5,1,8,4,0,7,6,9};
+	head=createLink(head,a);//创建一个单向链表
+	ordPrintLink(head);//顺序输出链表
+	prePrintLink1(head);//递归逆序输出链表
+	prePrintLink2(head);//栈逆序输出链表
+	return 0;
+}

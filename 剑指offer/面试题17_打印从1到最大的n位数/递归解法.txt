@@ -1,0 +1,59 @@
+/*
+	问题:打印从1到最大的n位数
+	解决方法: 将其想象成一个排列问题，也就是穷举，将每个位置的每种情况输出，也就完成了该题目的要求
+	算法：递归，
+	优点：不用像常规方法那样，考虑进位的问题
+*/
+#include<stdio.h>
+
+void PrintNumber(char * number,int length)
+{
+	bool isBeginning0=true;
+	for(int i=0;i<length;++i)
+	{
+		if(isBeginning0 && number[i]!='0')
+			isBeginning0=false;
+		if(!isBeginning0)
+			printf("%c",number[i]);
+	}
+	printf("\t");
+}
+
+
+void Print1ToMaxOfNDigit(char * number, int length,int index)
+{
+	if(index==length-1)
+	{
+		PrintNumber(number,length);//打印数字
+		return ;
+	}
+	for(int i=0;i<10;++i)
+	{
+		number[index+1]=i+'0';
+	    /*这里切记不能使用++index,如果改变了index的实际值，就回让递归回来的number找不到正确的index
+		例如：index处原来是1，现在递归回来像变成2，但是index的值却已变成2，并且还往上自增，也就是变成3，
+		不仅跳过了2，运行到后面就会导致整个程序的崩溃*/
+		
+		Print1ToMaxOfNDigit(number,length,index+1);
+	}
+}
+void Print1ToMaxOfNDigit(int n)
+{
+	if(n<=0)
+		return ;
+	char * number = new char[n+1];
+	number[n]='\0';
+	for(int i=0;i<10;++i)
+	{
+		number[0]=i+'0';
+		Print1ToMaxOfNDigit(number,n,0);
+	}
+}
+int main(void)
+{
+	int n;
+	printf("输入位数：");
+	scanf("%d",&n);
+	Print1ToMaxOfNDigit(n);
+	return 0;
+}

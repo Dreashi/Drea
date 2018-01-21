@@ -1,0 +1,115 @@
+/*
+	问题描述：现有一个字符矩阵，给你一个字符串，要求从矩阵中找到所有符合该字符串的路径，每个字符只能被访问一次
+	算法描述：因为是给定矩阵寻找所有解，并且由多个步骤组成，且每个步骤由多个选项组成，故采用回溯法
+	解决思路：用一个与矩阵相同规模的bool数组作为访问标识，再用一个栈数组存放寻找过程中的路径，当前位置符合条件，压入栈
+				若当前位置所有方向都不符合条件，则开始回溯，即返回到上一个位置，且继续下一个方向的判断
+				（注意：回溯时，应当将栈顶出栈，并将重置访问位）
+*/
+
+#include<stdio.h>
+#define ROW 3
+#define COL 4
+//字符矩阵
+char R[ROW][COL]={{'a','b','t','g'},
+				{'c','f','c','e'},
+				{'j','d','e','h'}};
+//bool矩阵
+bool B[ROW][COL]={0};
+//方向矩阵（以逆时针寻找）
+int F[4][2]={{1,0},{0,1},{-1,0},{0,-1}};
+
+//栈（存放寻找到的路径）
+typedef struct node{
+	int row;
+	int col;
+}Stack;
+int top=-1;//栈顶
+Stack s[100];//栈数组
+
+int count=0;//记录路径数
+void push(int r,int c)
+{
+	if((top+1)!=100)
+	{
+		s[++top].row=r;
+		s[top].col=c;
+	}
+}
+
+void pop()
+{
+	if(top!=-1)
+	{
+		s[top].row=-1;
+		s[top].col=-1;
+		--top;
+	}
+}
+
+//输出栈中存放的路径
+void printPath()
+{
+	printf("第%d条路径: ", ++count);
+	for(int i=0;i<=top;i++)
+	{
+		printf("(%d,%d)-->",s[i].row,s[i].col);
+	}
+	printf("end\n");
+}
+
+
+//根据起点寻找路径
+void findPath(char c[],int length,int t_row,int t_col,int index)
+{
+	if(index==length)//字符串寻找完毕，输出路径
+	{
+		printPath();
+	}
+
+	for(int i=0;i<4;i++)//从四个方向寻找是否匹配（逆时针）
+	{
+		int tr=t_row+F[i][0];
+		int tc=t_col+F[i][1];
+		if(tr>=0 && tr<ROW && tc>=0 && tc<COL && R[tr][tc] == c[index] && B[tr][tc]==0)//是否还在在字符矩阵的范围，并且字符相等，还没有被访问过
+		{
+				push(tr,tc);//入栈
+				B[tr][tc]=1;//将其设置为已访问
+				findPath(c,length,tr,tc,index+1);//继续寻找
+				//以下两步便是回溯
+				pop();//出栈
+			    B[tr][tc]=0;//重置访问位
+		}
+	}
+}
+
+//寻找字符串首字符在 字符矩阵中的位置，节省寻找的时间
+void findFirstValue(char c[],int length)
+{
+	
+	for(int i=0;i<ROW;i++)
+		for(int j=0;j<COL;j++)
+		{
+			if(R[i][j]==c[0])//寻找到起点
+			{
+				//printf("%d,%d",i,j);
+				push(i,j);//将起点入栈
+				findPath(c,length,i,j,1);//开始寻找路径
+			}
+		}
+}
+
+
+int main(void)
+{
+	char c[4]={'b','f','c','e'};
+	findFirstValue(c,4);
+	if(count==0)
+	{
+		printf("没有找到符合条件路径!!!");
+	}
+	else
+	{
+		printf("一共找到%d条路径",count);
+	}
+	return 0;
+}

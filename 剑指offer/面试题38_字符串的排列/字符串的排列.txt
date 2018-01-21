@@ -1,0 +1,48 @@
+/*
+	问题:求字符的排列组合
+	思路:最简单的想法就是穷举，但时间复杂度随着字符数的增多而呈指数上升，不可采取，第二种想法就是回溯，准备两个字符数组，一个存储已排列的字符，
+		另一个存储输入的字符，但是时间复杂度依旧很高，随着已排列的字符越来越多，检查的次数越来越多;所以这里我们采用第三种方式，将字符串分为第一个
+		字符和后面的字符，将第一个字符依次与后面的字符交换，并且不用借助辅助空间。
+*/
+#include<stdio.h>
+#include<stdlib.h>
+
+void permutation(char * pStr);//字符的排列组合
+void permutation(char * pStr,char * pBegin);//pStr指向原字符数组的首地址，保持不动，方便输出，pBegin则用作遍历
+
+void permutation(char * str)
+{
+	if(!str)//检查空指针
+		return ;
+	permutation(str,str);
+}
+
+void permutation(char * pStr,char * pBegin)
+{
+	if(*pBegin == '\0')
+			puts(pStr);//输出该组合
+	else
+	{
+		for(char *pC=pBegin;*pC!='\0';++pC)
+		{
+			char temp = * pC;//交换pBegin 与 pC的字符
+			*pC =*pBegin ;
+			*pBegin = temp;
+
+			permutation(pStr,pBegin + 1);//继续往下
+
+			 temp = *pC;//将pBegin与pC的字符回调
+			*pC = * pBegin;
+			* pBegin = temp;
+		}
+	}
+}
+int main(void)
+{
+
+	char str[100];
+	printf("输入字符:");
+	gets(str);
+	permutation(str);//求排列组合
+	return 0;
+}

@@ -1,0 +1,58 @@
+/*
+	旋转数组:将一个递增排序的数组，从后边截取一部分置于前边，所得的数组成为旋转数组
+	问题描述:给定一个旋转数组，从中寻找最小值
+	算法描述:二分查找（前提是数组有序），通过与中间数的比较，迅速找到查找值所在的区域，依次类推，、
+	解决思路:借助二分查找的思想，此题同样可以适用（虽然总体无序，但可以利用其区域有序的特点），迅速找到最小值所在的区域
+			注意：特殊情况的考虑
+*/
+#include<stdio.h>
+#define N 8
+
+//顺序查找最小值
+int findOrderMin(int c[],int left,int right)
+{
+	int min=c[left];
+	for(int i=left+1;i<=right;i++)
+	{
+		if(min>c[i])
+			min=c[i];
+	}
+	return min;
+}
+
+//通过二分查找 寻找最小值
+int findMin(int b[])
+{
+	int left=0;
+	int right=N-1;
+	int mid=left;//赋左值的目的是为了当左值小于右值时，直接返回
+	while(b[left]>=b[right])
+	{
+		if(left+1==right)//当两指针相邻时，寻找结束
+		{
+			mid=right;//始终指向右值
+			break;
+		}
+		int mid=(left+right)/2;
+		//当出现左值等于右值，并且等于中值时，无法判断最小值的区域，故只能采取顺序查找
+		if(b[left]==b[right] && b[left]==b[mid])
+			return findOrderMin(b,left,right);
+		//左值大于中值，最小值在左边
+		if(b[left]>b[mid])
+			right=mid;
+		//左值小于中值，最小值在右边
+		else if(b[left]<b[mid])
+			left=mid;
+	
+	}
+	return b[mid];
+}
+int main(void)
+{
+	//int a[N]={1,1,0,1,1,1,1,1};//特殊情况1
+	//int a[N]={1,2,3,4,5,6,7,8};//特殊情况2
+	int a[N]={7,8,1,2,3,4,5,6};//普通的旋转数组
+	int min=findMin(a);
+	printf("该数组的最小值为:%4d",min);
+	return 0;
+}

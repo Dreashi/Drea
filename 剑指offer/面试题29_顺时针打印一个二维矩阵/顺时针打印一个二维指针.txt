@@ -1,0 +1,75 @@
+/*
+	问题:顺时针打印一个二维数组
+	思路:分析二维数组的特点，每次打印一圈，画图找到每次缩圈后的起点，然后开始寻找每次输出时打印的那一条边应该有哪些边界问题。开始打印
+	注意：由于循环很多，边界问题尤其应该重视,尤其是对于最后的一个圈的判断要分情况讨论
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+void printArray(int * arr,int row,int col);//正常打印数组
+void printMatrixClockWisely(int * arr,int row,int col);//顺时针打印数组
+void PrintMatrixInCirle(int * arr,int row,int col,int start);//打印一圈数据
+
+
+void printArray(int * arr,int row,int col)
+{
+	for(int i=0;i<row;++i)
+	{
+		for(int j=0;j<col;++j)
+			printf("%d\t",arr[i*col+j]);
+		printf("\n");
+	}
+}
+
+void printMatrixClockWisely(int * arr,int row,int col)
+{
+	if(!arr || row<=0 || col<=0)
+		return;
+	int start=0;
+		//这里利用了一个简单的结论，行值和列值一定大于 圈的起点坐标乘以2
+	while(col>start*2 && row>start*2)
+	{
+		PrintMatrixInCirle(arr,row,col,start);
+		start++;
+	}
+}
+
+void PrintMatrixInCirle(int * arr,int row,int col,int start)
+{
+	int endX = col-1-start;
+	int endY = row-1-start;
+
+	for(int i=start;i<=endX;++i)
+		printf("%d\t",arr[start*col+i]);
+	if(start<endY)
+		for(int i=start+1;i<=endY;++i)
+			printf("%d\t",arr[i*col+endX]);
+	if(start <endX && start<endY)
+		for(int i=endX-1;i>=start;--i)
+			printf("%d\t",arr[endY*col+i]);
+	if(start <endX && start<endY-1)
+		for(int i=endY-1;i>=start+1;--i)
+			printf("%d\t",arr[i*col+start]);
+	printf("\n");
+}
+
+int main(void)
+{
+	int row,col;
+	printf("输入行值和列值");
+	scanf("%d,%d",&row,&col);
+   	int * arr = (int *)malloc(sizeof(int) * row * col);
+	int count=1;
+	for(int i=0;i<row;++i)
+		for(int j=0;j<col;++j)
+			arr[i*col+j]=count++;
+
+	printf("\n正常打印:\n");
+	printArray(arr,row,col);
+
+	printf("\n顺时针打印:\n");
+	printMatrixClockWisely(arr,row,col);//顺时针打印数组
+
+	return 0;	
+}
