@@ -1,0 +1,59 @@
+/* 
+	作者:Coffee
+	日期:2018-1-22
+	问题:最小的k个数
+	思路:将前K个数截取出来，并找出最大值，然后逐个从海量数据里取出，当这个数据比最大值还大，即可进行下一个数据的判断，
+			如果小于这个最大值就把这个数存储进行，并更新最大值，直到数据全部处理完，输出就OK
+	
+	待改进:在寻找output数组的最大值下标时，可以将其优化成最大堆，这样在获取时的时间复杂度为O(1),但维护(插入和删除)需要O(logK)的时间复杂度
+			另外也可以维护成红黑树，这样在获取和插入时的时间复杂度都为O(logk)
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+void getLeastNum(int *input,int *output,int k,int len);//寻找最小的k个数
+int getMaxIndex(int * input,int k);//得到数组最大值的下标
+
+void getLeastNum(int * input,int * output,int k,int len)
+{
+	if(!input || !output || k<=0 || len<=0 || k>len)//异常检查
+		return;
+	for(int i=k;i<len;++i)
+	{
+		int maxIndex=getMaxIndex(output,k);//获取当前output数组的最大值下标
+		if(input[i]<output[maxIndex])//如果小于，更换即可
+			output[maxIndex]=input[i];
+	}
+}
+
+int getMaxIndex(int * output,int k)
+{
+	if(!output || k<=0)
+		return 0;
+	int index=0;
+	for(int i=1;i<k;++i)//寻找最大值下标
+		if(output[i]>output[index])
+			index=i;
+	return index;
+}
+int main(void)
+{
+	int input[20]={4,5,6,12,13,14,20,1,15,7,8,9,10,11,16,17,18,19,2,3};//如果是海量数据就可以不用存储，可以边读边处理
+	int k;
+	printf("输入要求的数字:");
+	scanf("%d",&k);
+	int *output=(int *)malloc(sizeof(int)*k);
+	for(int m=0;m<k;++m)//将数据的前k个数存储进输出数组
+		output[m]=input[m];
+	getLeastNum(input,output,k,20);
+
+	printf("最小的%d个数为:\t",k);
+	for(int i=0;i<k;++i)
+		printf("%d\t",output[i]);
+
+	printf("\n数组的现状:\n");
+	for(int j=0;j<20;++j)
+		printf("%d\t",input[j]);
+
+	return 0;
+}

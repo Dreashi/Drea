@@ -1,0 +1,81 @@
+/* 
+	作者:Coffee
+	日期:2018-1-22
+	问题:最小的k个数
+	思路:利用快排的思想，让快排后的下标与key比较，只有当两者相等才说明前k个最小
+
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+int partition(int * input,int len,int start,int end);//快排
+void getLeastNum(int *input,int len,int *output,int k);//将最小的k个数存入output数组
+
+int partition(int * input,int len,int start,int end)
+{
+	
+	int low=start;
+	int high=end;
+	int mid=input[end];
+	while(low<high)//若low，high相遇,则说明一趟快排结束
+	{	
+		while(input[low]<mid && low<high)
+			low++;
+		if(low<high)//换值并交换方向
+			input[high--]=input[low];
+		while(input[high]>=mid && low<high )
+			high--;
+		if(low<high)//换值并交换方向
+			input[low++]=input[high];
+	}
+	input[low]=mid;
+
+	return low;//相遇处的下标
+}
+
+void getLeastNum(int *input,int len,int *output,int k)
+{
+	if(!input || !output || len<=0 || k<0 || k>len-1)//检查异常参数
+		return ;
+
+	int start=0;
+	int end=len-1;
+	int index=partition(input,len,start,end);//先进行一趟快排
+	while(index != k-1)
+	{	
+		if(index>k-1)//如果比期望值大，说明只需要将之前的排序完毕就OK
+		{
+			end=index-1;
+			index=partition(input,len,start,end);
+		}
+		else//如果比期望值小，说明只需要将之后的排序完毕就OK
+		{
+			start=index+1;
+			index = partition(input,len,start,end);
+		}
+	}
+
+	for(int i=0;i<k;++i)//将得到的数组的前K个数截取出来
+		output[i]=input[i];
+}
+int main(void)
+{
+	int input[10]={3,2,5,8,10,4,7,6,9,1};
+	int k;
+	printf("输入要求的数字:");
+	scanf("%d",&k);
+	int *output=(int *)malloc(sizeof(int)*k);
+//	partition(input,10,0,9);
+
+	getLeastNum(input,10,output,k);
+	
+	printf("最小的%d个数为:\t",k);
+	for(int i=0;i<k;++i)
+		printf("%d\t",output[i]);
+
+	printf("\n数组的现状:\n");
+	for(int j=0;j<10;++j)
+		printf("%d\t",input[j]);
+
+	return 0;
+}
