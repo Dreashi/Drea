@@ -1,0 +1,114 @@
+/* 
+	作者:Coffee
+	日期:2018-1-23
+	问题:数据流中的中位数
+	思路:将所有数据分为数量差值不大于1的两部分数据，前者维持成不完全大根堆（只要堆顶最大即可），后者维持成不完全小根堆（只要堆顶最小即可）
+		直到大根堆的堆顶不大于小根堆的堆顶时;若总数为偶数，输出大根堆堆顶和小根堆堆顶的平均值，若为奇数，则输出数多的部分的堆顶即可
+
+	
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+void bigRootHeap(int *bheap,int len);//一趟大根堆排序的调整
+void smallRootHeap(int *sheap, int len);//一趟小根堆排序的调整
+int getMedian(int * input,int len);//得到中位数
+
+void bigRootHeap(int * bheap,int len)
+{
+	if(!bheap || len<=0)
+		return ;
+	int paIndex=len>>1;//指向父节点的下标，利用二叉树的特性
+	int temp;
+	while(paIndex >=0)//将最大值放到堆顶
+	{
+		if(bheap[paIndex] < bheap[paIndex*2])
+		{
+			temp = bheap[paIndex];
+			bheap[paIndex] = bheap[paIndex * 2];
+			bheap[paIndex * 2] = temp;
+		}
+
+		if((paIndex*2+1)<len && bheap[paIndex] < bheap[paIndex*2+1])
+		{
+			temp=bheap[paIndex];
+			bheap[paIndex]=bheap[paIndex*2+1];
+			bheap[paIndex*2+1]=temp;
+		}
+		paIndex--;
+	}
+}
+
+void smallRootHeap(int *sheap, int len)
+{
+	if(!sheap || len<=0)
+		return ;
+	int paIndex=len>>1;//指向父节点的下标，利用二叉树的特性
+	int temp;
+	while(paIndex >=0)//将最小值放到堆顶
+	{
+		if(sheap[paIndex] > sheap[paIndex*2])
+		{
+			temp = sheap[paIndex];
+			sheap[paIndex] = sheap[paIndex * 2];
+			sheap[paIndex * 2] = temp;
+		}
+
+		if((paIndex*2+1)<len && sheap[paIndex] > sheap[paIndex*2+1])
+		{
+			temp=sheap[paIndex];
+			sheap[paIndex]=sheap[paIndex*2+1];
+			sheap[paIndex*2+1]=temp;
+		}
+		paIndex--;
+	}
+}
+
+int getMedian(int * input,int len)
+{
+	if(!input || len <=0)
+		return 0;
+	int leftLength=len>>1;//数组左边的长度，维护成不完全大根堆
+	int rightLength=len>>1;//数组右边的长度，维护成不完全小根堆
+	
+	if(len & 1)//若为奇数，右边长度加一
+		rightLength+=1;
+	
+	bigRootHeap(input,leftLength-1);//在左边利用大根堆找出最大值
+
+	smallRootHeap(input+leftLength,rightLength-1);//在右边利用小根堆找出最小值 
+
+	
+	while(input[0]>input[leftLength])//左边的最大值大于右边的最小值,交换两值，继续寻找
+	{
+		int temp = input[0];
+		input[0] = input[leftLength];
+		input[leftLength] = temp;
+		//继续寻找	
+		
+		bigRootHeap(input,leftLength-1);//在左边利用大根堆找出最大值
+		smallRootHeap(input+leftLength,rightLength);//在右边利用小根堆找出最小值
+		
+	}
+
+
+	int median=(input[0]+input[leftLength])/2;//中位数
+	if(len & 1)
+		median=input[leftLength];
+	return median;
+
+}
+
+int main(void)
+{
+	int input[20]={4,5,6,12,13,14,20,1,15,7,8,9,10,11,16,17,18,19,2,3};
+	int median=getMedian(input,20);
+	
+	printf("中位数为:%d",median);
+	printf("\n数组的现状:\n");
+	for(int j=0;j<20;++j)
+		printf("%d\t",input[j]);
+
+	return 0;
+}

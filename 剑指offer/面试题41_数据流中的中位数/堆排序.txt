@@ -1,0 +1,65 @@
+/* 
+	作者:Coffee
+	日期:2018-1-23
+	问题:实现堆排序
+	思路:堆其实就是一颗二叉树，所以我们利用二叉树的特性就可以实现，这里实现大根堆
+
+	
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+void heapSort(int *input ,int len)
+{
+	if(!input || len<=0)
+		return ;
+	int paIndex;
+	int tag;//标识是否进行过交换
+	int end=len-1;//记录当前排序的结束位置
+	int temp;//暂存值的变量
+	while(end>0)
+	{
+		tag=0;//将标识置为0
+		paIndex=end>>1;//移动到最后的分支节点
+		while(paIndex>=0)
+		{
+			if(input[paIndex]>input[paIndex*2])
+			{
+				temp=input[paIndex];//交换值
+				input[paIndex]=input[paIndex*2];
+				input[paIndex*2]=temp;
+				tag=1;//改变标识,为后面交换做准备
+			}
+			if(paIndex*2+1<=end && input[paIndex]>input[paIndex*2+1])
+			{
+				temp=input[paIndex];//交换值
+				input[paIndex]=input[paIndex*2+1];
+				input[paIndex*2+1]=temp;
+				tag=1;//改变标识,为后面交换做准备
+			}
+			paIndex--;//移动到下一个分支节点
+		}
+
+		if(tag)//将首位与末位的值交换，并将末位的标识前移
+		{
+			temp=input[0];
+			input[0]=input[end];
+			input[end]=temp;
+			end--;
+		}
+	}
+}
+
+
+int main(void)
+{
+	int input[20]={4,5,6,12,13,14,20,1,15,7,8,9,10,11,16,17,18,19,2,3};
+	
+	heapSort(input,20);
+	printf("\n排序后的数组:\n");
+	for(int j=0;j<20;++j)
+		printf("%d\t",input[j]);
+
+	return 0;
+}
