@@ -1,0 +1,46 @@
+/* 
+	作者:Coffee
+	日期:2018-1-24
+	问题:连续子数组的最大和
+	思路:设置一个标识位，处理异常输入;然后思考当累加和小于当前值时，就说明前面的累加和无意义，便用当前值替换掉和值，
+			并且使用一个变量记录最大值(去思考动态规划)
+	
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+bool flag = true;//处理异常输入的标识
+int getMaxSumOfSubArray(int * input,int len)
+{
+	if(!input || len<=0)
+	{
+		flag=false;
+		return 0;
+	}
+
+	int sum=input[0];
+	int subMax=input[0];
+	for(int i=1;i<len;++i)
+	{
+		sum+=input[i];//累加
+		if(sum < input[i])
+			sum=input[i];//若当前累加和小于该值
+
+
+		if(sum>subMax)
+		{
+			subMax=sum;//保存最大值
+		}
+	}
+	return subMax;
+}
+int main(void)
+{
+	int input[10]={-1,2,-3,1,5,6,-3,4,-2,6};
+	
+	int subMax=getMaxSumOfSubArray(input,10);
+	if(flag)
+		printf("\n最大子数组的和为:%d\n",subMax);
+	return 0;
+}
