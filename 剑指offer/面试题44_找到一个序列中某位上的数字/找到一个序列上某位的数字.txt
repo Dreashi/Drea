@@ -1,0 +1,84 @@
+/* 
+	作者:Coffee
+	日期:2018-1-25
+	问题:按照从0开始的自然数顺序序列化一串数，写一个函数，输入一个值，输出当前位置的数字
+	思路:首先可以很容易想到，遍历每个数,积累其数位和,与输入数进行比较,然后就可以很容易的找到该数的位置;但是我们这里不这样做
+		通过分析数的规律,可以不用遍历自然数序列.
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+int powerBase10(int p);//计算10的次方
+int getTheNumberOfSerializable(int key);//得到key处的数字
+
+
+
+int powerBase10(int p)
+{
+	if(p<=0)
+		return 0;
+	int result = 1; 
+	for(int i=0;i<p;++i)
+		result *=10;
+	return result;
+}
+
+int getTheNumberOfSerializable(int key)
+{
+	if(key<0)
+		return -1;
+	if(key<11)
+		return key-1;
+	int digit=0;//存储输入数的位数
+	
+	int temp1=key;
+	while(temp1)
+	{
+		temp1/=10;
+		digit++;
+	}
+//	printf("digit:%d\n",digit);
+	int preSum=0;//记录前一个和值
+	int nextSum=0;//记录当前和值
+	int i=0;
+	for(;nextSum<=key;++i)
+	{
+		preSum=nextSum;
+		nextSum+=(powerBase10(i+1)-powerBase10(i))*(i+1);//计算当前位数一共出现了多少个数字
+		
+	}
+//	printf("i:%d\tpreSum:%d\tnextSum:%d\t",i,preSum,nextSum);
+
+	int subSum=(key-preSum)/i+powerBase10(i-1)-1;//计算该数出现在当前范围的第几位
+//	printf("\nsubSum:%d\n",subSum);
+
+	int remainder=(key-preSum)%i;//计算该数字出现在该数的第几位
+	if(remainder)//当不能整除,数值加1
+		subSum+=1;
+
+//	printf("remainder:%d\t",remainder);
+	for(int j=0;j<remainder;j++)
+	{
+		subSum%=powerBase10(i-j);
+		printf("subSum:%d\t",subSum);
+	}
+	int result;
+	if(remainder==0)
+		result=subSum%10;
+	else
+		result= subSum/powerBase10(i-remainder);
+	return	result;
+		
+}
+
+
+int main(void)
+{
+	int key;
+	printf("请输入一个数:");
+	scanf("%d",&key);
+
+	int keyNum=getTheNumberOfSerializable(key);
+	printf("\n序列化中第%d位数字是%d\n",key,keyNum);
+	return 0;
+}
