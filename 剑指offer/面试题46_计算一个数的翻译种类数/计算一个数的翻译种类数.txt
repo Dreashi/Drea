@@ -1,0 +1,97 @@
+/* 
+	作者:Coffee
+	日期:2018-1-26
+	问题:将'0'翻译成'a','1'翻译成'b'...'25'翻译成'z',写一个函数，输入一个数，输出它的组合翻译总数。例:输入1111,输出5
+	思路:首先将一个数字翻译成一串字符，然后采用一个辅助数组，跟随我们遍历的顺序，记录组合翻译的种数，这里记录的规则是按照递归式
+			f(i)=f(i+1)+g(i,i+1)*f(i+2),简单的理解就是每次去累加前面的种数，如果当前位和后置位满足要求，就需要再加上后置位后的种数
+
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+int digitOfNum(int num);//返回数的位数
+char * toString(int num);//返回数的字符数组
+
+int getTranslationCount(int num);//得到该数的组合数
+
+
+int digitOfNum(int num)
+{
+	if(num<0)
+		return -1;
+	if(num==0)
+		return 1;
+	int digit=0;
+	while(num)
+	{
+		digit++;
+		num/=10;
+	}
+	return digit;
+}
+
+char * toString(int num)
+{
+	if(num<0)
+		return NULL;
+	int digit = digitOfNum(num);//得到位数
+	char * str = (char *)malloc(sizeof(char)*digit);//分配数组
+	for(int i=digit-1;i>=0;--i)
+	{
+		str[i]=num%10+'0';
+		num/=10;
+	}
+
+	return str;
+}
+
+int getTranslationCount(int num)
+{
+	if(num<0)
+		return -1;
+
+	int length = digitOfNum(num);//数组长度
+	char * str = toString(num);//将数字转化成字符
+	int * counts=(int *)malloc(sizeof(int)*length);//存放种数
+
+	int count=0;
+	for(int i=length-1;i>=0;--i)
+	{
+		count=0;
+		if(i<length-1)
+			count=counts[i+1];//将总数叠加
+		else
+			count=1;
+		if(i<length-1)
+		{
+			int digit1=str[i]-'0';
+			int digit2=str[i+1]-'0';
+	//		printf("%d\t%d\t",digit1,digit2);
+			int temp = digit1*10 + digit2;
+			if(temp>=10 && temp <= 25)
+			{
+				if(i<length-2)
+					count+=counts[i+2];//总数叠加
+				else
+					count+=1;
+			}
+		}
+	//	printf("%d\t\n",count);
+		counts[i]=count;//将种数累计到当前位置
+	}
+	
+	count = counts[0];
+	return count;
+}
+
+int main(void)
+{
+	int key;
+	printf("请输入一个数:");
+	scanf("%d",&key);
+	
+
+	int count=getTranslationCount(key);
+	printf("\n数字%d共有%d种组合\n",key,count);
+	return 0;
+}
