@@ -1,0 +1,101 @@
+/* 
+	作者:Coffee
+	日期:2018-1-27
+	问题:在给定n个数中找出m个数的和为固定值k。输入n，再输入n个数，最后输入k,返回和值等于k的数的组合
+	思路:可以采用回溯的思想，当前值如果等于k值，那么就输出;当前值不等于的话,就回溯一位，直到结束，才前移
+			借助一个新的数组存储实现
+
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+void initArray();//初始化数组
+void printArray(int * arrTemp,int len);//输出数组
+
+void findTheGroup();//得到所有的组合
+void findTheGroup(int * arrTemp,int index,int indexTemp,int sum);
+
+int * arr;//存储输入的数
+int key;//key值
+int len;//存储长度
+int count=0;//记录组合数
+
+//初始化数组
+void initArray()
+{
+	if(len<=0)
+		return ;
+	printf("请输入数组的值\n");
+	arr =(int *)malloc(sizeof(int)*len);
+	for(int i=0;i<len;++i)
+		scanf("%d",&arr[i]);
+
+}
+
+//输出数组
+void printArray(int * arr,int len)
+{
+	if(!arr || len <= 0)
+		return ;
+	printf("\n组合%d#:\t",++count);
+	for(int i=0;i<len;++i)
+		printf("%d\t",arr[i]);
+}
+
+//寻找组合
+void findTheGroup()
+{
+	if(!arr || len <=0)//判断是否已初始化完毕
+		return;
+	int * arrTemp =(int *)malloc(sizeof(int)*len);//分配辅助空间
+	
+	findTheGroup(arrTemp,0,0,0);
+
+	free(arrTemp);//释放空间
+}
+
+/*	
+辅助空间:arrTemp 
+
+记录每次循环的开始下标:
+
+记录已经存储数据的位置:indexTemp
+  
+记录当前的和:sum
+*/
+void findTheGroup(int * arrTemp,int index,int indexTemp,int sum)
+{
+	if(sum==key)//相等输出数组
+		printArray(arrTemp,indexTemp);
+	else if(sum<key)
+	{
+		for(int i=index;i<len;i++)
+		{
+			arrTemp[indexTemp++]=arr[i];
+			sum+=arr[i];
+		
+			findTheGroup(arrTemp,i+1,indexTemp,sum);//继续递归找
+			
+			sum-=arr[i];//回溯
+			indexTemp--;
+		}
+	}
+	
+}
+int main(void)
+{
+
+	printf("请输入数组的长度:");
+	scanf("%d",&len);
+	initArray();//初始化数组
+	
+	printf("\n请输入关键值");
+	scanf("%d",&key);
+
+	findTheGroup();//寻找满足条件的组合
+	
+	printf("\n一共有%d组合方式!\n",count);
+	
+	free(arr);//释放数组空间
+	return 0;
+}
