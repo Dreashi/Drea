@@ -1,0 +1,99 @@
+/* 
+	作者:Coffee
+	日期:2018-1-28
+	问题:小明去游乐园玩耍，他的票一共可以玩t分钟。
+		游乐场一共有n个项目，编号1到n，第i个项目需要a[i]的时间。游乐场规定，在票没有到期前，拥有者都可以入场，无论完成项目出场时该票是否已经过期。
+		小明可以任意决定玩项目的顺序，但是每个项目他只想玩一次。问小明最长可以玩多久？
+
+	思路:可以采用回溯的思想，当前时间如果小于拥有值，判断是否大于当前的最大值，是替换，否不替换，并继续寻找下一个项目;
+			当前时间大于等于拥有时间的话,就回溯，直到循环结束，输出最大值
+		
+
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+int * initArray();//初始化项目数组
+
+
+void findMaxTime(int * arr);//计算最大玩耍时间
+void findMaxTime(int * arrTemp,int index,int sumTime);
+
+
+int time;//拥有时间
+int num;//项目数量
+int maxTime=0;//记录最大玩耍时间
+
+//初始化数组
+int * initArray()
+{
+	if(num<=0)
+		return NULL;
+	printf("请输入数组的值\n");
+	int * arr =(int *)malloc(sizeof(int)*num);
+	int temp;//暂存输入的时间
+	for(int i=0;i<num;++i)
+	{
+		scanf("%d",&temp);
+		arr[i]=temp>100?temp%100+1:temp;//控制数在1～100的范围
+	}
+	return arr;	
+
+}
+
+//寻找组合
+void findMaxTime(int * arr)
+{
+	if(!arr || num <=0 || num>100 || time<=0 || time>10000000)//检错
+		return;
+	
+	findMaxTime(arr,0,0);
+
+}
+
+/*	
+数组空间:arr 
+
+记录每次循环的开始下标:index
+
+  
+记录当前的玩耍的时间和:sumTime
+*/
+void findMaxTime(int * arr,int index,int sumTime)
+{
+	if(sumTime<time)//如果当前的和值大于保存的最大玩耍时间，替换
+	{
+		for(int i=index;i<num;i++)
+		{
+			sumTime+=arr[i];//累加当前玩耍时间
+		
+			if(sumTime>maxTime)//累加时间到最大时间里
+				maxTime=sumTime;
+			findMaxTime(arr,i+1,sumTime);//继续递归找
+			
+			sumTime-=arr[i];//回溯
+		}
+
+	}
+	
+}
+
+int main(void)
+{
+
+	printf("请输入小明拥有的时间:");
+	scanf("%d",&time);
+
+	printf("\n请输入当前的项目数:");
+	scanf("%d",&num);
+
+	int * arr=initArray();//初始化项目数组,即每个项目所需的时间
+	
+	findMaxTime(arr);//寻找满足条件的组合
+	
+	printf("\n小明最多可玩耍%d分钟:\n",maxTime);
+	
+	free(arr);//释放数组空间
+	return 0;
+}
