@@ -1,0 +1,59 @@
+package edu.Tensor.second;
+
+import org.junit.Test;
+
+import java.util.Scanner;
+
+public class NumberToChinese {
+    public static String [] ch1 ={"零","壹","贰","叁","肆","伍","陆","柒","捌","玖"};
+    public static String [] ch2 = {"","拾","佰","仟","万","亿"};
+
+    public static String numberToChinese(int input){
+        if(input==0)
+            return "零";
+
+        int temp = input>=0?input:(-input);//中间变量，避免改变input,影响后面的比较，并保证操作的是正数
+        StringBuilder str  = new StringBuilder();//保存数字字符串
+
+        int digitAll=0,digit;//digitAll标记总位数,digit为四位一分后的位数
+        int index=input%10;
+        int preIndex;//index存储当前位的值，preIndex存储前一位的值
+        while(temp!=0){
+            preIndex= index;//保留前一位的值
+            index = temp%10;//每次取最后一位，根据规则拼接字符
+            temp/=10;
+            digit=digitAll%4;//四位一分
+
+
+            if( preIndex!=0 || index!=0) {//判断当前位和前一位是否都为零
+                if(index==0 && preIndex!=0)//当前位为0，前置位不为0
+                    str = str.insert(0,ch1[index]);
+                if(digitAll==4 ) {//满足即创建万
+                        str = str.insert(0,ch2[4]);
+                }else if(digitAll==8 ){//满足即创建亿
+                    str = str.insert(0,ch2[5]);
+                }
+                if(index!=0) {//当前位不为零
+                    str = str.insert(0, ch2[digit]);
+                    str = str.insert(0, ch1[index]);
+                }
+            }
+            digitAll++;
+        }
+        if(input<200000 && input>99999) {
+            str =  str.replace(0,1,"");
+        }
+        if (input<0)
+            str = str.insert(0,'负');
+        return str.toString();
+    }
+
+    @Test
+    public static void main(String []args){
+        Scanner in = new Scanner(System.in);
+        System.out.println("输入一个数");
+        int input = in.nextInt();
+        String str = numberToChinese(input);
+        System.out.println("转换后:"+str);
+    }
+}
