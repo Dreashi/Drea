@@ -1,9 +1,19 @@
+
 package edu.Tensor.second;
 
 import org.junit.Test;
 
 import java.util.Scanner;
-
+/**
+ * 问题：输入阿拉伯数字，将其转化成中文表示
+ * 例：输入：100111 输出：拾万零壹佰一拾一
+ * 思路：该题重点就是区分各种特殊情况
+ *      1.对于位数的普通修饰，四位一个循环
+ *      2.对于数字中0的转化，只需关注前置位是否为零
+ *      3.对于万，亿的修饰，用位数记录即可
+ *      4.根据日常习惯，对数进行处理
+ *      5.对于负数，零要进行处理
+ */
 public class NumberToChinese {
     public static String [] ch1 ={"零","壹","贰","叁","肆","伍","陆","柒","捌","玖"};
     public static String [] ch2 = {"","拾","佰","仟","万","亿"};
@@ -18,26 +28,26 @@ public class NumberToChinese {
         int digitAll=0,digit;//digitAll标记总位数,digit为四位一分后的位数
         int index=input%10;
         int preIndex;//index存储当前位的值，preIndex存储前一位的值
+
         while(temp!=0){
             preIndex= index;//保留前一位的值
             index = temp%10;//每次取最后一位，根据规则拼接字符
             temp/=10;
             digit=digitAll%4;//四位一分
 
-
-            if( preIndex!=0 || index!=0) {//判断当前位和前一位是否都为零
-                if(index==0 && preIndex!=0)//当前位为0，前置位不为0
+            if(index==0 && preIndex!=0)//当前位为0，前置位不为0,即可添加“零”
                     str = str.insert(0,ch1[index]);
-                if(digitAll==4 ) {//满足即创建万
-                        str = str.insert(0,ch2[4]);
-                }else if(digitAll==8 ){//满足即创建亿
-                    str = str.insert(0,ch2[5]);
-                }
-                if(index!=0) {//当前位不为零
-                    str = str.insert(0, ch2[digit]);
-                    str = str.insert(0, ch1[index]);
-                }
+
+            if(digitAll==4 && input%100000000>10000) {//满足即创建万
+                str = str.insert(0,ch2[4]);
+            }else if(digitAll==8 ){//满足即创建亿
+                str = str.insert(0,ch2[5]);
             }
+            if(index!=0) {//当前位不为零
+                str = str.insert(0, ch2[digit]);
+                str = str.insert(0, ch1[index]);
+            }
+
             digitAll++;
         }
         if(input<200000 && input>99999) {

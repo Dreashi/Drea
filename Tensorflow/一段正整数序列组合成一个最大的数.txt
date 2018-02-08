@@ -1,0 +1,55 @@
+package edu.Tensor.second;
+
+import java.util.Scanner;
+
+/**
+ * 问题：根据n个整数，将其进行排列组合，组合成一个最大的数，例：7，13，1，5  最大数：75131
+ * 思路：可以按照快排的思想，只不过判断谁前谁后的条件不是值本身的大小，而是两个数字组合起来，怎么样最大
+ */
+
+public class GetMaxValue {
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        int [] arr = new int[n];
+        for(int i=0;i<n;++i){
+            arr[i]=in.nextInt();
+        }
+        GetMaxValueByQuickSort(arr,0,arr.length-1);
+        String str=new String();
+        for(int i=n-1;i>=0;--i)
+            str += arr[i];
+        System.out.println(str);
+        }
+
+        public static void GetMaxValueByQuickSort(int [] arr,int low,int high){
+            if(low<high) {
+                int mid = partition(arr, low, high);
+                GetMaxValueByQuickSort(arr, low, mid - 1);
+                GetMaxValueByQuickSort(arr, mid + 1, high);
+            }
+        }
+
+        public static int partition(int[]arr,int low,int high){
+            int index = arr[high];//保存比较的数，它也会被顶掉
+            while(low<high){
+                while(low<high && judgeMax(index,arr[low]))
+                    low++;
+                arr[high]=arr[low];
+                while(low<high && judgeMax(arr[high],index))
+                    high--;
+                arr[low]=arr[high];
+            }
+            arr[high]=index;
+            return high;
+        }
+
+        //判断a是否应该在b前面
+        public static boolean judgeMax(int a,int b){
+            String ab = String.valueOf(a)+String.valueOf(b);
+            String ba = String.valueOf(b)+String.valueOf(a);
+            return Integer.valueOf(ab)>Integer.valueOf(ba);
+        }
+
+}
