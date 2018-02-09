@@ -1,0 +1,61 @@
+package edu.Tensor.second;
+
+import org.junit.Test;
+
+public class ReLinkList {
+    //节点
+     class  Node{
+        private int data;
+        private Node next;
+    }
+
+    @Test
+    public  void test() {
+        int [] arr = {3,2,5,8,4,7,6,9};
+        int len = arr.length;
+        Node head = createLinkList(arr);//创建一个链表
+        System.out.println("正序:");
+        for(Node p=head; p!=null;p=p.next)
+            System.out.print(p.data+" ");
+
+        System.out.println("\n逆序：");
+        Node rehead =reLinkList(head);//逆序该链表
+        for(Node p=rehead; p!=null;p=p.next)
+            System.out.print(p.data+" ");
+    }
+    //创建一个链表
+    public  Node createLinkList(int [] arr){
+        if(arr==null)
+            return null;
+        Node head = new Node();
+        Node p,q;
+        int len = arr.length;
+        head.data=arr[0];
+        head.next=null;
+        q=head;
+        for(int i=1;i<len;++i){
+            p=new Node();
+            p.data=arr[i];
+            p.next=null;
+            q=q.next=p;
+
+        }
+        return head;
+    }
+
+    //逆序一个链表
+    public   Node reLinkList(Node head){
+        if(head==null)
+            return null;
+        Node currNode=head;//当前节点
+        Node preNode=null;//前一节点
+        Node nextNode=null;//后一节点
+        while(currNode!=null){
+            nextNode = currNode.next;//保存当前节点的下一节点，防止节点丢失
+            currNode.next=preNode;
+            preNode=currNode;
+            currNode= nextNode;
+        }
+        return preNode;
+    }
+}
